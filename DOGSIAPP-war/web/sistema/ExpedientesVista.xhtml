@@ -1,0 +1,698 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:body>  
+        <ui:composition template="../plantillas/principal.xhtml">
+            <ui:define name="content">
+           <ace:panel header="#{menusc.formaSeleccionada}" >
+                  <ace:menuBar>
+                    <ace:menuItem value="Buscar Tŕamite por Abogados" 
+                                  icon="ui-icon ui-icon-search" 
+                                  action="#{expedientes.buscarabogados()}"/>
+                    <ace:menuItem value="Buscar Tŕamite por Clientes" 
+                                  icon="ui-icon ui-icon-search" 
+                                  action="#{expedientes.buscarClientes()}"/> 
+                    <ace:menuItem value="Buscar Tŕamite por Contrarios" 
+                                  icon="ui-icon ui-icon-close" 
+                                  action="#{expedientes.irprincipio()}"/> 
+                  </ace:menuBar>
+                    <ui:include src="../BuscarExpedientes.xhtml" /> 
+                    <ui:include src="../BuscarClientesExpedientes.xhtml"  /> 
+            </ace:panel>
+            <ace:dialog header="#{menusc.formaSeleccionada}" modal="true" closable="false" 
+                            visible="#{expedientes.formulario.mostrar}" 
+                            rendered="#{expedientes.formulario.mostrar}"> 
+                    <h:panelGrid columns="7">
+                        <ace:menuBar autoSubmenuDisplay="true" >               
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                          rendered="#{expedientes.formulario.nuevo}" 
+                                          action="#{expedientes.insertar()}"  />   
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                          action="#{expedientes.grabar()}" 
+                                          rendered="#{expedientes.formulario.modificar}" />                          
+                            <ace:menuItem action="#{expedientes.borrar()}" 
+                                          value="Esta seguro de Borrar el registro?" 
+                                          rendered="#{expedientes.formulario.borrar}"
+                                          icon="ui-icon ui-icon-trash"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.cancelar()}"/>
+                        </ace:menuBar> 
+                        <ace:messages/>
+                    </h:panelGrid>
+<!--                    <ace:panel header="Información General">
+                    </ace:panel>-->
+                        <ace:tabSet>
+                       <ace:tabPane label="Información General">
+                          <ace:tabSet>
+                          <ace:tabPane label="Actores">
+<!--                          <ace:panel header="Informacion de Actores" collapsed="true">-->
+                          <h:panelGrid columns="2">
+                          <ice:outputLabel value="Código Único : "  class="bold" />
+                          <ice:outputText value="#{expedientes.proceso.codigo}"/>
+                               
+                          <ice:outputLabel value="Abogado Entrada : "  class="bold" />
+                          <ice:selectOneMenu value="#{expedientes.abogado}"    valueChangeListener="#{expedientes.cambiaAbogado}" partialSubmit="true"  >
+                                <f:selectItems value="#{expedientes.comboAbogados}"/>
+                          </ice:selectOneMenu>
+                          <ice:outputLabel value="Abogado Contrario:" class="bold" />
+                          <ice:selectOneMenu value="#{expedientes.abogadoContrario}">
+                              <f:selectItems value="#{expedientes.comboAbogadosContrario}"/>
+                          </ice:selectOneMenu> 
+                          <ice:outputLabel value="Declaración Inicial:" class="bold" />
+                          <ice:inputTextarea  cols="40" rows="3" value="#{expedientes.proceso.observacion}"/>
+                          <ice:outputLabel value="Procurador:" class="bold"  />
+                          <ice:selectOneMenu value="#{expedientes.procurador}"  valueChangeListener="#{expedientes.cambiaProcurador}"   partialSubmit="true">
+                               <f:selectItems value="#{expedientes.comboProcurador}"/>
+                           </ice:selectOneMenu>
+                           <ice:outputLabel value="Procurador Contrario:"  class="bold" />
+                           <ice:selectOneMenu value="#{expedientes.procuradorContrario}">
+                               <f:selectItems value="#{expedientes.comboProcuradorContrario}"/>
+                           </ice:selectOneMenu>
+                             <ice:outputLabel value="Perito:" class="bold"  />
+                           <ice:selectOneMenu value="#{expedientes.perito}">
+                               <f:selectItems value="#{peritos.comboPeritos}"/>
+                           </ice:selectOneMenu>
+                            <ice:outputLabel value="Estado:" class="bold"  />
+                            <ice:selectOneMenu value="#{expedientes.proceso.estado}">
+                                <f:selectItem itemLabel="---" itemValue="-1"/>
+                                <f:selectItem itemLabel="Inicio" itemValue="1"/>
+                                <f:selectItem itemLabel="En Proceso" itemValue="2"/>
+                                <f:selectItem itemLabel="Cerrado" itemValue="3"/>
+                           </ice:selectOneMenu>
+                         </h:panelGrid>
+<!--                       </ace:panel>      -->
+                    </ace:tabPane>
+                        <ace:tabPane label="Causas">
+                          <h:panelGrid columns="2">
+                                    <ace:menuBar>
+                                        <ace:menuItem value="Agregar Causa" 
+                                                      icon="ui-icon ui-icon-document" 
+                                                      action="#{expedientes.crearcausaproceso()}"/>
+                                    </ace:menuBar>
+                                    <ace:messages/>
+                          </h:panelGrid>
+                         <h:panelGrid columns="1" width="100%">
+                             <ace:dataTable value="#{expedientes.listacausasproceso}"
+                                           var="causa"
+                                           resizableColumns="true"
+                                           rowIndexVar="row"
+                                           style="width: 99%;" 
+                                           binding="#{expedientes.formulariocausaproceso.fila}">
+                                 <ace:column headerText="Acciones">
+                                    <ace:menuButton  effect="slide" effectDuration="200" value="..." >
+                                      <ace:menuItem value="Editar" icon="ui-icon ui-icon-pencil" 
+                                                    action="#{expedientes.modificacausaproceso()}" 
+                                                      helpText="Editar"/>
+                                        <ace:menuItem value="Borrar" icon="ui-icon ui-icon-trash" 
+                                                      action="#{expedientes.elimnacausaproceso()}" 
+                                                      helpText="Borrar" />
+                                    </ace:menuButton>
+                                 </ace:column>
+                                <ace:column style="text-align: left" headerText="Causa">
+                                    <h:outputText value="#{causa.tipoproceso.nombre}"   />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Tribunal">
+                                    <h:outputText value="#{causa.tribunal.nombre}" />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Jurisdicción">
+                                    <h:outputText value="#{causa.tribunal.jurisdiccion.nombre}" />
+                                </ace:column>
+                            </ace:dataTable>  
+                        </h:panelGrid> 
+                </ace:tabPane>   
+                              
+                                 <ace:tabPane label="Clientes">
+                                <h:panelGrid columns="2">
+                                    <ace:menuBar>
+                                        <ace:menuItem value="Nuevo" 
+                                                      icon="ui-icon ui-icon-document" 
+                                                      action="#{expedientes.crearclienteproceso()}"/>
+                                    </ace:menuBar>
+                                    <ace:messages/>
+                                </h:panelGrid>
+                                <ace:dataTable value="#{expedientes.listaclientesproceso}" 
+                                               var="item"
+                                               paginatorAlwaysVisible="true"
+                                               paginator="true"
+                                               resizableColumns="true"
+                                               lazy="false"
+                                               rowIndexVar="row"
+                                               rows="10"
+                                               style="width: 99%;"
+                                               binding="#{expedientes.formularioclientesproceso.fila}"> 
+                                    <ace:column headerText="" style="text-align: left">
+                                        <ace:menuButton  effect="slide" effectDuration="200" value="..." >
+                                            <ace:menuItem action="#{expedientes.borraclienteproceso(item)}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                        </ace:menuButton>
+                                    </ace:column>   
+                                    <ace:column headerText="Nro.">
+                                        <h:outputText value="#{row+1}"/>
+                                    </ace:column>
+                                    <ace:column  headerText="Nombres: " sortBy="#{item.cliente.cliente.apellidos}" style="text-align: left">
+                                        <h:outputText  value="#{item.cliente.cliente.apellidos}    #{item.cliente.cliente.nombres} "/>
+                                    </ace:column>
+                                             <ace:column  headerText="Nombres: " sortBy="#{item.cliente.cliente.apellidos}" style="text-align: left">
+                                        <h:outputText  value="#{item.cliente.cliente.apellidos}    #{item.cliente.cliente.nombres} "/>
+                                    </ace:column>
+<!--                                    <ace:column  headerText="Apellidos: " sortBy="#{item.cliente.cliente.apellidos}" style="text-align: left">
+                                        <h:outputText  value="#{item.cliente.cliente.apellidos}"/>
+                                    </ace:column>-->
+                                </ace:dataTable>  
+                            </ace:tabPane>             
+                         <ace:tabPane label="Contrarios">
+                                <h:panelGrid columns="2">
+                                    <ace:menuBar>
+                                        <ace:menuItem value="Nuevo" 
+                                                      icon="ui-icon ui-icon-document" 
+                                                      action="#{expedientes.crearcontrarioproceso()}"/>
+                                    </ace:menuBar>
+                                    <ace:messages/>
+                                </h:panelGrid>
+                                <ace:dataTable value="#{expedientes.listacontrarioproceso}" 
+                                               var="item"
+                                               paginatorAlwaysVisible="true"
+                                               paginator="true"
+                                               resizableColumns="true"
+                                               lazy="false"
+                                               rowIndexVar="row"
+                                               rows="10"
+                                               style="width: 99%;"
+                                               binding="#{expedientes.formulariocontrariosproceso.fila}"> 
+                                    <ace:column headerText="" style="text-align: left">
+                                        <ace:menuButton  effect="slide" effectDuration="200" value="..." >
+                                            <ace:menuItem action="#{expedientes.borracontarriproceso(item)}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                        </ace:menuButton>
+                                    </ace:column>   
+                                    <ace:column headerText="Nro.">
+                                        <h:outputText value="#{row+1}"/>
+                                    </ace:column>
+                                    <ace:column  headerText="Nombres" sortBy="#{item.apellidosnombrescon}" style="text-align: left">
+                                        <h:outputText  value="#{item.apellidosnombrescon}"/>
+                                    </ace:column>
+                                    <ace:column  headerText="Email" sortBy="#{item.emailcon}" style="text-align: left">
+                                        <h:outputText  value="#{item.emailcon}"/>
+                                    </ace:column>
+                                    <ace:column  headerText="Teléfonos" sortBy="#{item.telefonocon}" style="text-align: left">
+                                        <h:outputText  value="#{item.telefonocon}"/>
+                                    </ace:column>
+                                    <ace:column  headerText="Dirección" sortBy="#{item.direccioncon}" style="text-align: left">
+                                        <h:outputText  value="#{item.direccioncon}"/>
+                                    </ace:column>
+                                </ace:dataTable>  
+                            </ace:tabPane> 
+                              
+                              
+                     </ace:tabSet>      
+                               
+                        </ace:tabPane>
+            
+     
+                             <!--Archivos-->
+                    <ace:tabPane  label="Archivos">  
+                            <h:panelGrid columns="2" >
+                            <ice:outputLabel value="Tipo de Archivo:" />
+                            <ice:selectOneMenu value="#{expedientes.tipoarchivo}">
+                                <f:selectItems value="#{tablaDeCodigos.comboTiposArchivos}"/>
+                           </ice:selectOneMenu> 
+                           </h:panelGrid>
+                         <h:panelGrid columns="2" width="50%">
+                            <ace:fileEntry 
+                                           relativePath="/files/"
+                                           maxFileCount="10"
+                                           maxFileCountMessage="Máxima Cantidad de Archivos 10."
+                                           fileEntryListener="#{expedientes.documentoListener}"
+                                           maxFileSize="10242880"
+                                           maxFileSizeMessage="Tamaño Maximo del Archivo 10Mb."
+                                           maxTotalSize="102428800"
+                                           maxTotalSizeMessage="Tamaño Total Maximo del Archivo 100Mb."
+                                           required="false"
+                                           requiredMessage="The file is required to submit this form."
+                                           useOriginalFilename="true"
+                                           useSessionSubdir="true"
+                                           />
+                            <h:commandButton  type="submit" value="Subir Archivo"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" width="100%">
+                            <ace:dataTable value="#{expedientes.listaarchivosproceso}"
+                                           var="documentos"
+                                           resizableColumns="true" rowIndexVar="fila"
+                                           style="width: 99%;" binding="#{expedientes.formularioarchivosprocesos.fila}">
+                                <ace:column style="text-align: left" headerText="Tipo de Archivo">
+                                    <h:outputText value="#{documentos.tipoarchivo.nombre}"   />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Nombre de Archivo">
+                                    <h:outputText value="#{documentos.nombrearchivo}"/>
+                                </ace:column>
+                                <ace:column style="text-align: right" headerText="Tamaño (Mb)">
+                                    <h:outputText value="#{documentos.tamano}">
+                                    </h:outputText>
+                                </ace:column>
+                                 <ace:column  headerText="Ver Documento" style="text-align: left">
+                                     <h:commandLink value="#{documentos.nombrearchivo}"  action="#{expedientes.verDocumento1(documentos)}"/>
+                                </ace:column>
+                                <ace:column style="text-align: left">                             
+                                    <ace:menuBar autoSubmenuDisplay="true" >
+                                        <ace:menuItem value="Borrar" icon="ui-icon ui-icon-trash" 
+                                                      action="#{expedientes.borrar(documentos,fila)}" 
+                                                      helpText="Borrar"/>
+                                    </ace:menuBar>
+                                </ace:column>
+                            </ace:dataTable>  
+                        </h:panelGrid>
+                    </ace:tabPane>     
+                            <ace:tabPane label="Escritos Adjuntos">
+                                <h:panelGrid columns="2">
+                                    <ace:menuBar>
+                                        <ace:menuItem value="Nuevo" 
+                                                      icon="ui-icon ui-icon-document" 
+                                                      action="#{expedientes.crearescritoproceso()}"/>
+                                    </ace:menuBar>
+                                    <ace:messages/>
+                                </h:panelGrid>
+                         <h:panelGrid columns="1" width="100%">
+                             <ace:dataTable value="#{expedientes.listaescritosproceso}"
+                                           var="escrito"
+                                           resizableColumns="true"
+                                           rowIndexVar="row"
+                                           style="width: 99%;" 
+                                           binding="#{expedientes.formularioescritosproceso.fila}">
+                                 <ace:column headerText="Acciones">
+                                    <ace:menuButton  effect="slide" effectDuration="200" value="..." >
+                                      <ace:menuItem value="Editar" icon="ui-icon ui-icon-pencil" 
+                                                      action="#{expedientes.modificaescrito()}" 
+                                                      helpText="Editar"/>
+                                        <ace:menuItem value="Borrar" icon="ui-icon ui-icon-trash" 
+                                                      action="#{expedientes.borrarEscrito()}" 
+                                                      helpText="Borrar" />
+                                    </ace:menuButton>
+                                 </ace:column>
+                                <ace:column style="text-align: left" headerText="Tipo">
+                                    <h:outputText value="#{escrito.tipo}"   />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Nombre">
+                                    <h:outputText value="#{escrito.nombres}" escape="false"/>
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Escrito">
+                                    <h:outputText value="#{escrito.texto}" escape="false"/>
+                                </ace:column>
+                            </ace:dataTable>  
+                        </h:panelGrid>
+                            </ace:tabPane>   
+                            <ace:tabPane label="Pagos y Cancelaciones">
+                                <h:panelGrid columns="2">
+                                    <ice:outputLabel value="Tipo de Pago :" />
+                                    <ice:selectOneMenu value="#{conceptosPagos.tipo}"  valueChangeListener="#{conceptosPagos.cambiTipo}" partialSubmit="true">
+                                        <f:selectItems value="#{tablaDeCodigos.comboTiposConceptosPago}"/>
+                                    </ice:selectOneMenu>
+                                   <ice:outputLabel value="Tipo de Concepto :"  />
+                                   <ice:selectOneMenu value="#{expedientes.conceptopago}" valueChangeListener="#{expedientes.cambiaConceptoPago}" partialSubmit="true"   >
+                                       <f:selectItems value="#{conceptosPagos.comboConceptosPagos}"/>
+                                    </ice:selectOneMenu>
+                                   <ice:outputLabel value="Concepto de Pago :"  />
+                                   <ace:panel rendered="#{expedientes.conceptopago!=null}" >
+                                       <h:panelGrid columns="2">
+                                       <ice:outputText value="Tipo :"/>
+                                       <ice:outputText value="#{expedientes.conceptopago.tipo.nombre}"/>
+                                       <ice:outputText value="Descripción :"/>
+                                       <ice:outputText value="#{expedientes.conceptopago.tipo.descripcion}"/>
+                                       <ice:outputText value="Valor :"/>
+                                       <ice:outputText value="#{expedientes.conceptopago.importe}">
+                                           <f:convertNumber currencySymbol="$" maxFractionDigits="2" minFractionDigits="2"/>
+                                       </ice:outputText>
+                                       </h:panelGrid>
+                                   </ace:panel>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                       <ace:menuBar>
+                                        <ace:menuItem value="Nuevo" 
+                                                      icon="ui-icon ui-icon-document" 
+                                                      action="#{expedientes.crearpagoproceso()}"/>
+                                    </ace:menuBar>
+                                </h:panelGrid>
+                                
+                                
+                                        <ace:messages/>
+                         <h:panelGrid columns="1" width="100%">
+                             <ace:dataTable value="#{expedientes.listapaConceptospagoproceso}"
+                                           var="pago"
+                                           resizableColumns="true" rowIndexVar="fila"
+                                           style="width: 99%;" binding="#{expedientes.formulariopagosproceso.fila}">
+                                 
+                                <ace:column headerText="Acciones">
+                                    <ace:menuButton  effect="slide" effectDuration="200" value="..." >
+<!--                                      <ace:menuItem value="Editar" icon="ui-icon ui-icon-info" 
+                                                    action="#{expedientes.borrapagoproceso()}" 
+                                                      helpText="Editar"/>-->
+                                        <ace:menuItem value="Borrar" icon="ui-icon ui-icon-trash" 
+                                                      action="#{expedientes.borrapagoproceso()}" 
+                                                      helpText="Borrar" />
+                                    </ace:menuButton>
+                                 </ace:column>
+                                <ace:column style="text-align: left" headerText="Tipo">
+                                    <h:outputText value="#{pago.tipo}"   />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Descripción">
+                                    <h:outputText value="#{pago.descripcion}" escape="false"/>
+                                </ace:column>
+                                 <ace:column style="text-align: left" headerText="Costo">
+                                     <h:outputText value="#{pago.importe}" >
+                                         <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" minFractionDigits="2"/>
+                                     </h:outputText>
+                                </ace:column>
+                                     
+                                   <ace:row condition="group" groupBy="#{expedientes.listapaConceptospagoproceso}" pos="after" >
+                                    <ace:column >
+                                    </ace:column>
+                                    <ace:column >
+                                    </ace:column>
+                                    <ace:column  style="text-align: right" >
+                                        <h:outputText  value="TOTAL" styleClass="bold" />
+                                    </ace:column>
+                                    <ace:column style="text-align: right">
+                                        <h:outputText value="#{expedientes.totalPago()}" style="text-align: right">
+                                            <f:convertNumber type="currency"   currencySymbol="$"  maxFractionDigits="2" minFractionDigits="2"/>
+                                        </h:outputText>
+                                    </ace:column>
+                                </ace:row>   
+                                     
+                                     
+                                     
+                               
+                            </ace:dataTable>  
+                        </h:panelGrid>  
+                      </ace:tabPane> 
+                        <ace:tabPane label="Historial">
+                          <h:panelGrid columns="1" width="100%">
+                              <ace:dataTable value="#{expedientes.listatrackings}"
+                                           var="tracking"
+                                           resizableColumns="true" rowIndexVar="fila"
+                                           style="width: 99%;" >
+                                <ace:column style="text-align: left" headerText="Fecha">
+                                    <h:outputText value="#{tracking.fechaingreso}">
+                                      <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Descripción">
+                                    <h:outputText value="#{tracking.descripcion}" escape="false"/>
+                                </ace:column>
+                               <ace:column style="text-align: left" headerText="Usuario">
+                                   <h:outputText value="#{tracking.userid}" />
+                                </ace:column>
+                            </ace:dataTable>  
+                        </h:panelGrid>
+                      </ace:tabPane> 
+                        </ace:tabSet>    
+                    </ace:dialog>  
+                <ace:dialog 
+                    header="#{menusc.formaSeleccionada}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{expedientes.formularioclientesproceso.mostrar}"
+                    visible="#{expedientes.formularioclientesproceso.mostrar}">
+                    <ui:include src="../BuscarClientes.xhtml"/> 
+                    <h:commandLink value="Crear Nuevo Cliente" action="#{clientes.crear()}"/>
+                    <ice:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{expedientes.formularioclientesproceso.nuevo}" 
+                                          action="#{expedientes.insertarclienteproceso()}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.formularioclientesproceso.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages/>
+                    </ice:panelGrid> 
+                </ace:dialog>
+                <ace:dialog 
+                    header="#{menusc.formaSeleccionada}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{expedientes.formulariocontrariosproceso.mostrar}"
+                    visible="#{expedientes.formulariocontrariosproceso.mostrar}">
+                    <ice:panelGrid columns="2">
+                    <ice:outputLabel value="Apellidos y Nombres:"  />
+                    <ice:inputText  value="#{expedientes.contrarioproceso.apellidosnombrescon}"/>
+                    <ice:outputLabel value="Dirección:" />
+                    <ice:inputText  value="#{expedientes.contrarioproceso.direccioncon}"  />
+                    <ice:outputLabel value="e-mail:" />
+                    <ice:inputText  value="#{expedientes.contrarioproceso.emailcon}" />
+                         <ice:outputLabel value="Teléfono :" />
+                         <ice:inputText  value="#{expedientes.contrarioproceso.telefonocon}" />
+                   </ice:panelGrid>
+            
+                    <ice:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{expedientes.formulariocontrariosproceso.nuevo}" 
+                                          action="#{expedientes.insertarcontrarioproceso()}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.formulariocontrariosproceso.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages/>
+                    </ice:panelGrid> 
+                </ace:dialog>
+              <ace:dialog 
+                    header="#{menusc.formaSeleccionada}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{expedientes.formularioescritosproceso.mostrar}"
+                    visible="#{expedientes.formularioescritosproceso.mostrar}">
+                  
+                  
+                  <h:panelGrid columns="2">
+                   <ice:outputLabel value="Tipos de Escritos:"   rendered="#{expedientes.formularioescritosproceso.nuevo}" />
+                   <ice:selectOneMenu value="#{escritos.tipo}" valueChangeListener="#{escritos.cambiaEscrito}" partialSubmit="true" rendered="#{expedientes.formularioescritosproceso.nuevo}">
+                       <f:selectItems value="#{tablaDeCodigos.comboTipoEscritos}"/>
+                    </ice:selectOneMenu> 
+                    <ice:outputLabel value="Escrito:"  rendered="#{expedientes.formularioescritosproceso.nuevo}" />
+                    <ice:selectOneMenu value="#{expedientes.escrito}" rendered="#{expedientes.formularioescritosproceso.nuevo}">
+                        <f:selectItems value="#{escritos.comboEscritos}"/>
+                    </ice:selectOneMenu> 
+                    <ice:outputLabel value="Texto:"  rendered="#{expedientes.formularioescritosproceso.modificar}" />
+                     <ace:richTextEntry value="#{expedientes.escritosproceso.texto}"
+                                language="es"
+                                skin="kama"
+                                toolbar="Default"
+                                saveOnSubmit="True"
+                                height="150"
+                                rendered="#{expedientes.formularioescritosproceso.modificar}">
+                            <ace:ajax event="save" execute="@all" render="@all" />
+                      </ace:richTextEntry> 
+                   
+                  
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{expedientes.formularioescritosproceso.nuevo}" 
+                                          action="#{expedientes.insertarescritoproceso()}"/>
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{expedientes.formularioescritosproceso.modificar}" 
+                                          action="#{expedientes.grabarEscrito()}"/>
+                            <ace:menuItem value="Esta seguro de Borrar el registro?" icon="ui-icon ui-icon-trash" rendered="#{expedientes.formularioescritosproceso.borrar}" 
+                                          action="#{expedientes.eliminarEscrito()}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.formularioescritosproceso.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages/>
+                    
+                   </h:panelGrid>
+                  
+                  
+                  
+                </ace:dialog>
+               <ace:dialog 
+                    header="#{menusc.formaSeleccionada}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{expedientes.formulariopagosproceso.mostrar}"
+                    visible="#{expedientes.formulariopagosproceso.mostrar}">
+                    <ice:panelGrid columns="2">
+                    <ice:outputLabel value="Pago:"  />
+                    <ice:outputLabel  value="#{expedientes.pagosproceso.tipo}"/>
+                    <ice:outputLabel value="Descripción:" />
+                    <ice:outputLabel  value="#{expedientes.pagosproceso.descripcion}"  />
+                    <ice:outputLabel value="Pago:" />
+                    <ice:inputText  value="#{expedientes.pagosproceso.importe}" >
+                        <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" minFractionDigits="2"/>
+                    </ice:inputText>
+                   </ice:panelGrid>
+                    <ice:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{expedientes.formulariopagosproceso.nuevo}" 
+                                          action="#{expedientes.insertarpagoproceso()}"/>
+                            <ace:menuItem value="Borrar" icon="ui-icon ui-icon-trash" rendered="#{expedientes.formulariopagosproceso.borrar}" 
+                                          action="#{expedientes.borrarpagoproceso()}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.formulariopagosproceso.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages/>
+                    </ice:panelGrid> 
+                </ace:dialog>
+                   <ace:dialog header="Visualizar Documento" modal="true" closable="false" 
+                               visible="#{expedientes.formularioImagen.mostrar}" 
+                               rendered="#{expedientes.formularioImagen.mostrar}" >
+                    <h:panelGrid columns="2">
+                        <ice:outputResource
+                            fileName="#{expedientes.nombrearchivo}" 
+                            attachment="true" 
+                            label="Descargar Documento"
+                            mimeType="application/pdf" 
+                            resource="#{expedientes.imagenrs}" 
+                            type="button"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <ace:menuBar>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.formularioImagen.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                    <ace:messages/>
+                </ace:dialog>
+                  <ace:dialog header="#{menusc.formaSeleccionada}" modal="true" closable="false" 
+                              visible="#{expedientes.formularioarchivosprocesos.mostrar}" 
+                              rendered="#{expedientes.formularioarchivosprocesos.mostrar}" >
+                    <h:panelGrid columns="2">
+                        <ace:menuBar>
+                       <ace:menuItem value="Esta seguro de Borrar el registro?" icon="ui-icon ui-icon-trash" 
+                                     action="#{expedientes.borrararchivos()}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.formularioarchivosprocesos.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                    <ace:messages/>
+                </ace:dialog>
+                <ace:dialog header="#{menusc.formaSeleccionada}" modal="true" closable="false" 
+                               visible="#{expedientes.formulariocausaproceso.mostrar}" 
+                              rendered="#{expedientes.formulariocausaproceso.mostrar}" >
+                   <h:panelGrid columns="2">
+                       <ice:outputLabel value="Causa : "  class="bold" />
+                       <ice:selectOneMenu value="#{expedientes.tipocausaproceso}"   >
+                            <f:selectItems value="#{procesos.comboTiposProcesos}"/>
+                       </ice:selectOneMenu>    
+                       <ice:outputLabel value="Tribunal : "  class="bold" />
+                       <ice:selectOneMenu value="#{expedientes.tribunal}"   >
+                           <f:selectItems value="#{tribunales.comboTribunales}"/>
+                       </ice:selectOneMenu>
+                   </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <ace:menuBar>
+                           <ace:menuItem value="Grabar"
+                                     icon="ui-icon ui-icon-disk" 
+                                     action="#{expedientes.insertarcausaproceso()}"
+                                     rendered="#{expedientes.formulariocausaproceso.nuevo}"/>
+                           <ace:menuItem value="Grabar"
+                                     icon="ui-icon ui-icon-disk" 
+                                     action="#{expedientes.grabarcausa()}"
+                                     rendered="#{expedientes.formulariocausaproceso.modificar}"/>
+                           <ace:menuItem value="Esta seguro de Borrar el registro?"
+                                     icon="ui-icon ui-icon-trash" 
+                                     action="#{expedientes.eliminarcausa()}"
+                                     rendered="#{expedientes.formulariocausaproceso.borrar}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.formulariocausaproceso.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                    <ace:messages/>
+                </ace:dialog>
+                
+                
+                
+             <ace:dialog header="#{menusc.formaSeleccionada}" modal="true" closable="false" 
+                         visible="#{expedientes.formulariotextoproceso.mostrar}" 
+                              rendered="#{expedientes.formulariotextoproceso.mostrar}" >
+             
+                       <ace:dataTable value="#{expedientes.auxcampos}"
+                                           var="campo"
+                                           resizableColumns="true" rowIndexVar="fila"
+                                           style="width: 99%;" binding="#{expedientes.formulariotextoproceso.fila}">
+                  
+                                <ace:column style="text-align: left" headerText="Campo">
+                                    <h:outputText value="#{campo.clave}"   />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Valor">
+                                    <h:inputText value="#{campo.valor}" />
+                                </ace:column>
+                            </ace:dataTable> 
+                    <h:panelGrid columns="2">
+                        <ace:menuBar>
+                           <ace:menuItem value="Grabar"
+                                     icon="ui-icon ui-icon-disk" 
+                                     action="#{expedientes.reemplazarcampor()}"
+                                     rendered="#{expedientes.formulariotextoproceso.nuevo}"/>
+<!--                           <ace:menuItem value="Grabar"
+                                     icon="ui-icon ui-icon-disk" 
+                                     action="#{expedientes.grabarcausa()}"
+                                     rendered="#{expedientes.formulariocausaproceso.modificar}"/>
+                           <ace:menuItem value="Esta seguro de Borrar el registro?"
+                                     icon="ui-icon ui-icon-trash" 
+                                     action="#{expedientes.eliminarcausa()}"
+                                     rendered="#{expedientes.formulariocausaproceso.borrar}"/>-->
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{expedientes.formulariotextoproceso.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                    <ace:messages/>
+                </ace:dialog> 
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                <ui:include src="../DialogoClientes.xhtml"/> 
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+
+

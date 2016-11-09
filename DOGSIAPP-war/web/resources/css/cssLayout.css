@@ -1,0 +1,95 @@
+/* 
+    Document   : layoutcss
+    Created on : 10/02/2015, 08:27:44 PM
+    Author     : PATO
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+body {
+    background-color:white;
+    /*    background-color:#4f7b8f;*/
+    font-size: 11px;
+    font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+
+    /* color: navy; */
+    margin: 0px;
+}
+
+h1 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    border-bottom: 1px solid #AFAFAF; 
+    font-size:  11px;
+    font-weight: bold;
+    margin: 0px;
+    padding: 0px;
+    color: #D20005;
+}
+
+
+
+
+
+
+#top{
+    border-radius: 10px;
+    /*    background:brown;*/
+/*    color:navy;*/
+    text-align: center;
+    /*    border-radius: 10px;*/
+}
+
+#bottom{
+    /*       border: 1px solid aquamarine;*/
+    color:#1d1d1d;
+    padding: 20px;
+    /*      background:brown; 
+              border-radius: 10px;*/
+
+}
+
+
+.imagenCabecera{
+    margin: auto;
+
+    display: inline;
+
+}
+.cabecera{
+    background-color: black; 
+    line-height: 300%;
+    color: #ffffff;  
+}
+
+.column1{
+    width:75%;
+    padding: 40px;
+}
+.column2{
+    padding: 200px;
+
+    width:25%;
+
+}
+
+
+.ui-datatable-odd {
+    background-color:lightgray !important;
+    background-position-y: -1400px; /* IE7 hack */
+}
+
+.grupo{
+
+    background-color:navy !important;
+    color: #ffffff;  
+    font-weight: 500;
+}
+
+.bold{
+
+font-weight: 900;
+}     

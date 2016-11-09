@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:head>   
+
+    </h:head>
+    <h:body styleClass="ice-skin-xp">
+  <ui:composition template="../plantillas/principal.xhtml">
+            <icecore:singleSubmit/>
+            <!-- Aqui va todo el codigo de la pagina -->
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{menusc.formaSeleccionada}"
+                           closable="false"
+                           toggleable="true"
+                           >
+                    <ice:panelGrid columns="7">
+<!--                       <ice:outputLabel value="Oficina o Despacho:" />
+                        <ice:selectOneMenu value="#{clientes.despacho}">
+                                    <f:selectItems value="#{despachos.combodespachos}"/>
+                        </ice:selectOneMenu>-->
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{clientes.buscar()}"/>
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{clientes.crear()}"/>
+                        </ace:menuBar>
+                        <ice:outputConnectionStatus/>
+                        <ace:messages/>
+                    </ice:panelGrid>
+                </ace:panel>
+                <ace:panel 
+                    header="Resultado Bùsqueda"
+                    closable="false"
+                    toggleable="true"
+                    >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <ice:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{clientes.formulario.pantalla}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{clientes.formulario.pantalla}" 
+                                          target="tabla" fileName="datos"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       paginatorAlwaysVisible="true"
+                                       value="#{clientes.clientes}"
+                                       var="item"
+                                       paginator="true"
+                                       lazy="true"
+                                       resizableColumns="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="5,10,15,30,50,100"
+                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="30">
+                           <ace:column  headerText="Registro" style="text-align: right">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+<!--                            <ace:row condition="group" groupBy="#{item.despacho.nombre}" pos="before" styleClass="grupo">-->
+<!--                                <ace:column style="text-align: center" colspan="10">
+                                    <h:outputText value="#{item.despacho.nombre}" />
+                                </ace:column>
+                            </ace:row>-->
+                            <ace:column style="text-align: left" headerText="Acciones">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{clientes.modificar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{clientes.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Cédula de Identidad" sortBy="#{item.cliente.pin}" style="text-align: left"
+                                         filterBy="#{item.cliente.pin}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.cliente.pin}"/>
+                            </ace:column>
+                            <ace:column  headerText="Apellidos" sortBy="#{item.cliente.apellidos}" style="text-align: left"
+                                         filterBy="#{item.cliente.apellidos}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.cliente.apellidos}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombres" sortBy="#{item.cliente.nombres}" style="text-align: left"
+                                         filterBy="#{item.cliente.nombres}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.cliente.nombres}"/>
+                            </ace:column>
+                            <ace:column  headerText="email" sortBy="#{item.cliente.email}" style="text-align: left"
+                                         filterBy="#{item.cliente.email}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.cliente.email}"/>
+                            </ace:column>
+                            <ace:column  headerText="User id" sortBy="#{item.cliente.userid}" style="text-align: left"
+                                         filterBy="#{item.cliente.userid}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.cliente.userid}"/>
+                            </ace:column>
+                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.cliente.fecha}" style="text-align: left"
+                                         >
+                                <h:outputText  value="#{item.cliente.fecha}">
+                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </ace:column>
+<!--                            <ace:column  headerText="Despacho" sortBy="#{item.despacho.nombre}"
+                                         style="text-align: left"
+                                          filterBy="#{item.despacho.nombre}" filterMatchMode="contains">
+                               <h:outputText  value="#{item.despacho.toString()}"/>
+                            </ace:column>-->
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+                <ui:include src="../DialogoClientes.xhtml"/>
+            </ui:define>
+            <!-- Fin -->
+        </ui:composition>
+
+    </h:body>
+
+</html>

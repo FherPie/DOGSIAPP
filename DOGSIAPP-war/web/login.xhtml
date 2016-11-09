@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:head>
+        <title>Login</title>
+    </h:head>   
+    <h:body style="height: 100%;">
+        <ui:composition template="./plantillas/plantilla.xhtml">
+            <ui:define name="content"> 
+                <div style="height: 100%;" >
+<!--                    <ace:dialog id="panel"
+                                header="REGISTRO"
+                                closable="false"
+                                modal="true"
+                                draggable="false"
+                                showEffect="clip"
+                                hideEffect="fade"
+                                rendered="true"
+                                visible="true"
+                                >
+                        <f:view>-->
+<h:panelGrid columns="2" width="75%" columnClasses="column1,column2" >
+            <ice:graphicImage alt="Vida" url="resources/images/la-vida.jpg" value="../resources/imagenes/cabecera1.png"/>   
+            <h:form id="form">
+                <ace:panel>
+                                <h3>Por favor ingrese Usuario Y Contraseña</h3>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel id="user">Usuario:</h:outputLabel>
+                                    <h:inputText value="#{seguridad.usuario}"/>
+                                    <h:outputLabel id="password">Contraseña:</h:outputLabel>
+                                    <h:inputSecret value="#{seguridad.contrasena}"/>
+                                    <h:commandButton action="#{seguridad.login()}" value="Login">
+                                    </h:commandButton>
+                                </h:panelGrid>
+                                <h:messages id="errorMessages"  style="color: red;font-style: italic;font-weight: bold">
+                                </h:messages>
+                 </ace:panel>
+
+                </h:form>
+    
+</h:panelGrid>
+
+                <ace:dialog 
+                        header="Cambio de Clave"
+                        closable="false"
+                        modal="true"
+                        draggable="false"
+                        showEffect="clip"
+                        hideEffect="fade"
+                        rendered="#{seguridad.formulario.mostrar}"
+                        visible="#{seguridad.formulario.mostrar}">
+                        <ice:panelGroup>
+                            <ice:panelGrid columns="2">
+                                <ice:outputLabel  value="Contraseña Anterior:"/>
+                                <ice:inputSecret value="#{seguridad.claveAnterior}"/>
+                                <ice:outputLabel  value="Contraseña Nueva:"/>
+                                <ice:inputSecret value="#{seguridad.claveNueva}"/>
+                                <ice:outputLabel  value="Contraseña Nureva(Repetir):"/>
+                                <ice:inputSecret value="#{seguridad.claveRetpeada}"/>
+                            </ice:panelGrid>
+                            <ace:messages style="color: red;font-style: italic;font-weight: bold"/>
+                            <ice:panelGrid columns="1" width="100%">
+                                <ace:menuBar autoSubmenuDisplay="true" >
+                                    <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"  action="#{seguridad.cambio()}"/>
+                                    <ace:menuItem value="Salir" icon="ui-icon ui-icon-close"  action="#{seguridad.formulario.cancelar()}"/>
+                                </ace:menuBar>                                 
+                            </ice:panelGrid>
+                        </ice:panelGroup>
+                    </ace:dialog>
+            
+<!--                        </f:view>
+                    </ace:dialog>-->
+                  <!--            <ace:panel header="Perfiles" rendered="#{request.getUserPrincipal() != null}">
+                                <h:panelGrid    columns="1">
+                                  <a href="admin/PrincipioVista.xhtml?faces-redirect=true">Admin Zone</a>
+                                  <a href="users/PrincipioVista.xhtml?faces-redirect=true">Usuario Zone</a>
+                            </h:panelGrid>                
+                              </ace:panel>-->
+                </div>
+            </ui:define> 
+        </ui:composition>
+    </h:body>
+</html>
+

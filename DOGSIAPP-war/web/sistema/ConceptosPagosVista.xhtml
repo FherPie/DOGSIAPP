@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >  
+    <h:body>  
+        <ui:composition template="../plantillas/principal.xhtml">
+            <ui:define name="content">
+                <ace:panel header="#{menusc.formaSeleccionada}">
+                    <ace:panel header="Criterios de Búsqueda">
+                        <h:panelGrid columns="2">
+<!--                        <ice:outputLabel value="Consultorio:" />
+                        <ice:selectOneMenu value="#{conceptosPagos.despacho}">
+                                    <f:selectItems value="#{despachos.combodespachos}"/>
+                        </ice:selectOneMenu>-->
+                        <ice:outputLabel value="Tipo:" />
+                        <ice:selectOneMenu value="#{conceptosPagos.tipo}">
+                            <f:selectItems value="#{tablaDeCodigos.comboTiposConceptosPago}"/>
+                        </ice:selectOneMenu>
+                            <ace:menuBar>
+                                <ace:menuItem value="Nuevo" 
+                                              icon="ui-icon ui-icon-document" 
+                                              action="#{conceptosPagos.nuevo()}"/>
+                                <ace:menuItem value="Buscar" 
+                                              icon="ui-icon ui-icon-search" 
+                                              action="#{conceptosPagos.buscar()}"/>   
+                            </ace:menuBar>
+                        <ace:messages/>
+                        </h:panelGrid>
+                    </ace:panel>
+                    <ace:panel header="Resultados">
+                        <ace:dataTable value="#{conceptosPagos.listaconceptos}" 
+                                       var="item"
+                                       paginatorAlwaysVisible="true"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       lazy="true"
+                                       rowIndexVar="row"
+                                       rows="10"
+                                       style="width: 99%;"
+                                      > 
+                            <ace:column headerText="Acciones" style="text-align: left">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{conceptosPagos.modifica(item)}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{conceptosPagos.borra(item)}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column>   
+                            <ace:column headerText="Nro.">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column  headerText="Tipo" sortBy="#{item.tipo.nombre}" style="text-align: left"
+                                         filterBy="#{item.tipo.nombre}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.tipo.nombre}"/>
+                            </ace:column>
+                            <ace:column headerText="Nombre">
+                                <h:outputText value="#{item.nombre}"/>
+                            </ace:column>
+                            <ace:column headerText="Descripción">
+                                <h:outputText value="#{item.descripcion}"/>
+                            </ace:column>
+                           <ace:column headerText="Importe">
+                               <h:outputText value="#{item.importe}">
+                                   <f:convertNumber currencySymbol="$" groupingUsed="true"
+                     maxFractionDigits="2" type="currency" />
+                               </h:outputText>
+                            </ace:column>
+
+                        </ace:dataTable>
+                    </ace:panel>
+                </ace:panel>
+                <ace:dialog header="#{menusc.formaSeleccionada}" modal="true" closable="false" 
+                            visible="#{conceptosPagos.formulario.mostrar}" 
+                            rendered="#{conceptosPagos.formulario.mostrar}">
+                    <h:panelGrid columns="2">
+                        <ice:outputLabel value="Importe:" for="importe" />
+                        <ice:inputText id="importe" value="#{conceptosPagos.conceptopago.importe}">
+                                         <f:convertNumber currencySymbol="$" groupingUsed="true"
+                     maxFractionDigits="2" type="currency" />
+                        </ice:inputText>
+                        <h:outputLabel value="Nombre: "/>
+                        <ice:inputText value="#{conceptosPagos.conceptopago.nombre}"/>
+                        <h:outputLabel value="Descripción: "/>
+                        <h:inputTextarea cols="40" rows="5" value="#{conceptosPagos.conceptopago.descripcion}"/>
+                    </h:panelGrid>
+                    <ace:menuBar autoSubmenuDisplay="true" >               
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      rendered="#{conceptosPagos.formulario.nuevo}" 
+                                      action="#{conceptosPagos.insertar()}"/>   
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      action="#{conceptosPagos.grabar()}" 
+                                      rendered="#{conceptosPagos.formulario.modificar}" />                          
+                        <ace:menuItem action="#{conceptosPagos.borrar()}" 
+                                      value="Esta seguro de Borrar el registro?"
+                                      icon="ui-icon ui-icon-trash"
+                                      rendered="#{conceptosPagos.formulario.borrar}"/>
+                        <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                      action="#{conceptosPagos.cancelar()}"/>
+                    </ace:menuBar>
+                    <ace:messages/>
+                </ace:dialog>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:head>  
+        <title>Inicio</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../plantillas/principal.xhtml">
+
+            <ui:define name="content">
+                <ace:tabPane id="calendar" label="Calendario">
+                    <h:panelGrid styleClass="centeredPanelGrid" >
+                        <ace:dateTimeEntry id="cal"
+                                           timeZone="Canada/Mountain"
+                                           pattern="MMM/dd/yyyy" />
+                    </h:panelGrid>
+                </ace:tabPane>
+
+                <h:outputLabel value="Name:" for="nameInput" />
+                <h:inputText id="nameInput" value="#{inicio.apellidos}">
+                    <ace:ajax event="keyup" render="output" />
+                </h:inputText>
+                <h:panelGroup id="output">
+                    <h:outputText value="Hello #{inicio.apellidos}!"
+                                  rendered="#{not empty inicio.apellidos}" />
+                </h:panelGroup>
+
+
+<h:outputText value="El resultado de 1+2+3 es #{1+2+3}"/>
+
+
+
+                <ace:panel header="Inicio" rendered="#{request.getUserPrincipal() != null}">
+                    <h:panelGrid    columns="1">
+                        <p>Bienvenido al Sistema de Expedientes de Casos Judiciales</p>
+                        <a href="../sistema/PrincipioVista.xhtml?faces-redirect=true">Admin Zone</a>
+                        <a href="../externo/InicioVista.xhtml?faces-redirect=true">Usuario Zone</a>
+                    </h:panelGrid>                
+                </ace:panel>
+                <ace:tabSet id="sampleTabSet" clientSide="false">
+                    <ace:tabPane id="toDoList" label="Cosas Por Hacer-Tramites Pendientes">
+                        <ace:panel header="Eventos Por Venir (#{inicio.recordatoriosList.size()})">
+                            <ace:dataTable value="#{inicio.recordatoriosList}"
+                                           var="recordatorio"
+                                           resizableColumns="true"
+                                           rowIndexVar="row"
+                                           style="width: 99%;" 
+                                           paginatorAlwaysVisible="true"
+                                           paginator="true"
+                                           paginatorPosition="both"
+                                           rowsPerPageTemplate="5,10,15,30,50,100"
+                                           paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                           rows="5"
+                                           binding="#{inicio.formulario.fila}">
+                                <!--                                 <ace:column headerText="Acciones">
+                                                                    <ace:menuButton  effect="slide" effectDuration="200" value="..." >
+                                                                      <ace:menuItem value="Editar" icon="ui-icon ui-icon-pencil" 
+                                                                                    action="#{expedientes.modificacausaproceso()}" 
+                                                                                      helpText="Editar"/>
+                                                                        <ace:menuItem value="Borrar" icon="ui-icon ui-icon-trash" 
+                                                                                      action="#{expedientes.elimnacausaproceso()}" 
+                                                                                      helpText="Borrar" />
+                                                                    </ace:menuButton>
+                                                                 </ace:column>-->
+                                <ace:column style="text-align: left" headerText="Fecha Evento">
+                                    <h:outputText value="#{recordatorio.recordatorio.fecharecordatorio}"   >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Asunto">
+                                    <h:outputText value="#{recordatorio.recordatorio.asunto}"   />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Mensaje">
+                                    <h:outputText value="#{recordatorio.recordatorio.texto}"   />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Remitente">
+                                    <h:outputText value="#{recordatorio.recordatorio.entidad.toString()}" />
+                                </ace:column>
+                            </ace:dataTable> 
+                        </ace:panel>
+                        <ace:panel header="Eventos Actuales ">
+                            <ace:panel header="Ahora Eventos (#{inicio.recordatoriospresentes.size()})">
+                                <ace:dataTable value="#{inicio.recordatoriospresentes}"
+                                               var="recordatoriopre"
+                                               resizableColumns="true"
+                                               rowIndexVar="row"
+                                               paginatorAlwaysVisible="true"
+                                               paginator="true"
+                                               paginatorPosition="both"
+                                               rowsPerPageTemplate="5,10,15,30,50,100"
+                                               paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                               rows="5"
+                                               style="width: 99%;">
+
+                                    <ace:column style="text-align: left" headerText="Fecha Evento">
+                                        <h:outputText value="#{recordatoriopre.recordatorio.fecharecordatorio}"   >
+                                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                                        </h:outputText>
+                                    </ace:column>
+
+                                    <ace:column style="text-align: left" headerText="Asunto">
+                                        <h:outputText value="#{recordatoriopre.recordatorio.asunto}"   />
+                                    </ace:column>
+                                    <ace:column style="text-align: left" headerText="Mensaje">
+                                        <h:outputText value="#{recordatoriopre.recordatorio.texto}"   />
+                                    </ace:column>
+                                    <ace:column style="text-align: left" headerText="Remitente">
+                                        <h:outputText value="#{recordatoriopre.recordatorio.entidad.toString()}" />
+                                    </ace:column>
+                                </ace:dataTable> 
+                            </ace:panel>
+                        </ace:panel>
+                        <ace:panel header="Eventos Pasados">
+                            <ace:panel header="Pasados Eventos (#{inicio.recordatoriospasados.size()})">
+                                <ace:dataTable value="#{inicio.recordatoriospasados}"
+                                               var="recordatoriopas"
+                                               resizableColumns="true"
+                                               rowIndexVar="row"
+                                               paginatorAlwaysVisible="true"
+                                               paginator="true"
+                                               paginatorPosition="both"
+                                               rowsPerPageTemplate="5,10,15,30,50,100"
+                                               paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                               rows="5"
+                                               style="width: 99%;">
+                                    <ace:column style="text-align: left" headerText="Fecha Evento">
+                                        <h:outputText value="#{recordatoriopas.recordatorio.fecharecordatorio}"   >
+                                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                                        </h:outputText>
+                                    </ace:column>
+
+
+                                    <ace:column style="text-align: left" headerText="Asunto">
+                                        <h:outputText value="#{recordatoriopas.recordatorio.asunto}"   />
+                                    </ace:column>
+                                    <ace:column style="text-align: left" headerText="Mensaje">
+                                        <h:outputText value="#{recordatoriopas.recordatorio.texto}"   />
+                                    </ace:column>
+                                    <ace:column style="text-align: left" headerText="Remitente">
+                                        <h:outputText value="#{recordatoriopas.recordatorio.entidad.toString()}" />
+                                    </ace:column>
+                                </ace:dataTable> 
+                            </ace:panel>
+
+                        </ace:panel>
+
+
+
+                        <!--                                <ice:graphicImage alt="Vida" url="../resources/images/la-vida.jpg" value="../resources/imagenes/cabecera1.png"/>   -->
+                        <!--                    <h:selectManyCheckbox id="list" layout="pageDirection" selectedClass="selectedCheckBox" >
+                                                <f:selectItems value="#{inicio.cosas}"
+                                                                            var="listItem"
+                                                                            itemValue="#{listItem.value}"
+                                                                            itemLabel="#{listItem.index}"/>
+                                                <f:ajax execute="@this" render="@all"/>
+                                            </h:selectManyCheckbox>-->
+                    </ace:tabPane>
+                    <ace:tabPane id="shoppingList" label="Mis Tramites">
+    <!--                    <ace:dataTable id="tbl" value="#{tabSet.items}" var="item">
+                                <ace:column headerText="Picture">
+                                    <h:graphicImage value="#{item.image}" alt="#{item.name}"/>
+                                </ace:column>
+                               <ace:column headerText="Description">
+                                   <h:outputText value="#{item.name}"/>
+                              </ace:column>
+                             <ace:column headerText="Price check">
+                                 <h:outputText value="#{item.price}"/>
+                             </ace:column>
+                             <ace:column headerText="Quantity">
+                                 <h:outputText value="#{item.quantity}"/>
+                             </ace:column>
+                        </ace:dataTable>-->
+                    </ace:tabPane>
+                    <ace:tabPane id="picOfDay" label="Twitter">
+                        <!--                    <h:panelGrid style="text-align: center; width: 100%">
+                                                <h:graphicImage id="sampleImage" value="#{tabSet.image.path}" alt="#{tabSet.image.description}"/>
+                                            </h:panelGrid>-->
+                    </ace:tabPane>
+                    <ace:tabPane id="toDoList1" label="Iniciar un Nuevo Tramite">
+                        <h:selectManyCheckbox id="list1" layout="pageDirection" selectedClass="selectedCheckBox" >
+    <!--                                <f:selectItems value="#{tabSet.toDoList}"
+                                                        var="listItem"
+                                                        itemValue="#{listItem.value}"
+                                                        itemLabel="#{listItem.key}"/>
+                            <f:ajax execute="@this" render="@all"/>-->
+
+                        </h:selectManyCheckbox>
+                    </ace:tabPane>
+
+                </ace:tabSet> 
+
+
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+          
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>   
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" href="./xmlhttp/css/xp/xp.css"/>
+        <link href="../resources/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="../resources/css/cssLayout.css" rel="stylesheet" type="text/css" />
+        
+           <title>Sinergy Hard - Ecuador</title>
+
+    </h:head>
+
+    <h:body>
+        <h:form id="plantilla">
+            <div id="top">
+
+                <ui:insert name="top">
+                    <ui:include src="../plantillas/cabecera.xhtml" />
+                   
+                </ui:insert>
+            </div>
+            <div id="left">
+                <ui:insert name="left">
+                    <ace:accordion  collapsible="true" autoHeight="false">
+                        
+                        <c:forEach items="#{menusSinergy.cargarMenu}" var="itemmnu">
+                            <ace:accordionPane  title="#{itemmnu.texto}">
+                                <ice:panelGrid style="text-align: left" columns="1">
+                                    <c:forEach items="#{itemmnu.perfilList}" var="mnus">
+
+                                        <ice:commandLink value="#{mnus.menu.texto}" action="#{menusSinergy.ira(mnus)}"/>
+
+                                    </c:forEach>
+
+                                </ice:panelGrid>
+                            </ace:accordionPane>
+                        </c:forEach>
+
+                    </ace:accordion>
+                    <ice:panelGrid width="100%">
+                        <ace:menuButton id="menuButton" effect="slide" value="Más Acciones" style="width: 100%">
+                            <ace:menuItem value="Cambio de clave" icon="ui-icon ui-icon-key" action="#{datosLogueo.cambiar()}"/>
+                            <ace:menuItem value="Salir del Sistema" icon="ui-icon ui-icon-close"
+                                          action="#{datosLogueo.logout()}" />
+                        </ace:menuButton>
+                    </ice:panelGrid>
+                </ui:insert>
+            </div>
+
+            <div id="content"  class="center_content">
+                <ui:insert name="content">
+                    
+                </ui:insert>
+            </div>
+
+            <div id="bottom">
+                <ui:insert name="bottom">
+                    <ui:include src="../plantillas/pie.xhtml" />
+                </ui:insert>
+
+            </div>
+        </h:form>
+    </h:body>
+    <h:outputStylesheet library="org.icefaces.component.skins" name="xp.css" />
+</html>

@@ -1,0 +1,277 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >   
+    <h:body>
+        <ui:composition template="../plantillas/principal.xhtml">
+            <ui:define name="content">
+                <ace:dialog header="#{menusc.formaSeleccionada}" modal="true" closable="false" 
+                            visible="#{!expedientes.formulario.mostrar}" 
+                            rendered="#{!expedientes.formulario.mostrar}"> 
+                    <h:panelGrid columns="2">
+                        <ice:outputLabel value="Código : "  class="bold" />
+                        <ice:inputText value="#{expedientes.codigo}"/>
+                    </h:panelGrid>
+                    <ace:menuBar>
+                        <ace:menuItem value="Buscar" 
+                                      icon="ui-icon ui-icon-search" 
+                                      action="#{expedientes.buscar()}"/> 
+                        <ace:menuItem value="Salir" 
+                                      icon="ui-icon ui-icon-close" 
+                                      action="#{expedientes.irprincipio()}"/> 
+                    </ace:menuBar>
+                    <ace:panel header="Resultados">
+                        <ace:dataTable value="#{expedientes.listaexpedientes}" 
+                                       var="item"
+                                       paginatorAlwaysVisible="true"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       lazy="true"
+                                       rowIndexVar="rows"
+                                       rows="10"
+                                       style="width: 99%;"
+                                       > 
+                            <ace:column headerText="" style="text-align: left">
+                                <ace:menuButton  effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{expedientes.modifica(item)}" value="Imprimir" icon="ui-icon ui-icon-print"/>
+                                </ace:menuButton>
+                            </ace:column>   
+                            <ace:column headerText="Nro.">
+                                <h:outputText value="#{rows+1}"/>
+                            </ace:column>
+                            <ace:column  headerText="Fecha Creación " sortBy="#{item.creacionfecha}" style="text-align: left"
+                                         filterMatchMode="contains">
+                                <h:outputText  value="#{item.creacionfecha}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Código Único : " sortBy="#{item.codigo}" style="text-align: left"
+                                         filterMatchMode="contains">
+                                <h:outputText  value="#{item.codigo}"/>
+                            </ace:column>
+                            <ace:column  headerText="Abogado Encargado" sortBy="#{item.abogadoencargado.abogado.apellidos}" style="text-align: left"
+                                         filterMatchMode="contains">
+                                <h:outputText  value="#{item.abogadoencargado.abogado.toString()}"/>
+                            </ace:column>
+                            <ace:column  headerText="Abogado Contrario" sortBy="#{item.abogadoencargadocontrario.abogado.apellidos}" style="text-align: left"
+                                         filterMatchMode="contains">
+                                <h:outputText  value="#{item.abogadoencargadocontrario.abogado.toString()}"/>
+                            </ace:column>
+                            <ace:column  headerText="Perito " sortBy="#{item.perito.perito.apellidos}" style="text-align: left"
+                                         filterMatchMode="contains">
+                                <h:outputText  value="#{item.perito.perito.toString()}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </ace:panel>  
+                </ace:dialog> 
+                <ace:panel visible="#{expedientes.formulario.mostrar}" 
+                           rendered="#{expedientes.formulario.mostrar}" header="Opciones">
+                    <h:commandButton value="Imprimir"  >
+                        <ace:printer for="impresion"/>
+                    </h:commandButton>
+                    <h:commandButton value="Salir" action="#{expedientes.salir()}"  />
+                </ace:panel>
+                <ace:panel  visible="#{expedientes.formulario.mostrar}" 
+                            rendered="#{expedientes.formulario.mostrar}" id="impresion">
+                    
+                 <ace:panel header="Información Buffet">
+                        <h:panelGrid columns="4">
+                            <ice:graphicImage value="#{expedientes.abogado.despacho.logo}" id="resourceGraphicImage" style="height: 100px " />
+                            <ice:outputLabel value="#{expedientes.abogado.despacho.nombre.toUpperCase()}" class="bold"  />
+                            <ice:outputLabel value="Dirección: #{expedientes.abogado.despacho.direccion.primaria}, #{expedientes.abogado.despacho.direccion.numero}, #{expedientes.abogado.despacho.direccion.secundaria}  " class="bold"  />
+                            <ice:outputLabel value="Teléfonos: #{expedientes.abogado.despacho.direccion.telefono1} - #{expedientes.abogado.despacho.direccion.telefono2}" class="bold"  />
+                        </h:panelGrid>
+                </ace:panel>
+                    <ace:panel header="Información General">
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Código : "  class="bold" />
+                            <h:outputText value="#{expedientes.proceso.codigo}"  />
+                            
+                            <h:outputText value="Fecha de Creación : "  class="bold" />
+                            <h:outputText  value="#{expedientes.proceso.creacionfecha}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:outputText>
+                            
+                            <h:outputText value="Abogado Entrada : "  class="bold" />
+                            <h:outputText value="#{expedientes.abogado.toString()}"  />
+
+                            <h:outputText value="Abogado Contrario:" class="bold" />
+                            <h:outputText value="#{expedientes.abogadoContrario.toString()}"  />
+
+                            <h:outputText value="Declaración Inicial:" class="bold" />
+                            <h:outputText value="#{expedientes.proceso.observacion}"  />
+
+                            <ice:outputLabel value="Procurador:" class="bold"  />
+                            <ice:outputLabel value="#{expedientes.procurador.toString()}"  />
+
+                            <h:outputText value="Procurador Contrario:"  class="bold" />
+                            <h:outputText value="#{expedientes.procuradorContrario.toString()}"  />
+                            <h:outputText value="Perito:" class="bold"  />
+                            <h:outputText value="#{expedientes.perito.toString()}"  />
+
+                            <h:outputText value="Estado:" class="bold"  />
+                            <h:outputText value="Inicio" rendered="#{expedientes.proceso.estado==1}" />   
+                            <h:outputText value="En Proceso" rendered="#{expedientes.proceso.estado==2}" />   
+                            <h:outputText value="Cerrado" rendered="#{expedientes.proceso.estado==3}" />  
+                        </h:panelGrid>
+                    </ace:panel>
+
+                    <ace:panel header="Causas">
+                        <h:panelGrid columns="1" width="100%">
+                            <ace:dataTable value="#{expedientes.listacausasproceso}"
+                                           var="causa"
+                                           resizableColumns="true"
+                                           rowIndexVar="row"
+                                           style="width: 99%;" 
+                                           binding="#{expedientes.formulariocausaproceso.fila}">
+                                <ace:column style="text-align: left" headerText="Causa">
+                                    <h:outputText value="#{causa.tipoproceso.nombre}"   />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Tribunal">
+                                    <h:outputText value="#{causa.tribunal.nombre}" />
+                                </ace:column>
+                                <ace:column style="text-align: left" headerText="Jurisdicción">
+                                    <h:outputText value="#{causa.tribunal.jurisdiccion.nombre}" />
+                                </ace:column>
+                            </ace:dataTable>  
+                        </h:panelGrid> 
+                    </ace:panel>
+
+                    <ace:panel header="Clientes">
+                        <ace:dataTable value="#{expedientes.listaclientesproceso}" 
+                                       var="cliente"
+                                       lazy="false"
+                                       rowIndexVar="row"
+                                       rows="10"
+                                       style="width: 99%;"
+                                       binding="#{expedientes.formularioclientesproceso.fila}" > 
+                            <ace:column headerText="Nro.">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombres"  >
+                                <h:outputText  value="#{cliente.cliente.cliente.apellidos}    #{cliente.cliente.cliente.nombres} "/>
+                            </ace:column>
+                            <ace:column  headerText="Email" >
+                                <h:outputText  value="#{cliente.cliente.cliente.email}"/>
+                            </ace:column>
+                            <ace:column  headerText="Telefono" >
+                                <h:outputText  value="#{cliente.cliente.cliente.direccion.telefono1}"/>
+                            </ace:column>
+                        </ace:dataTable>  
+                    </ace:panel>
+                    <ace:panel header="Contrarios">
+                        <ace:dataTable value="#{expedientes.listacontrarioproceso}" 
+                                       var="item"
+                                       lazy="false"
+                                       rowIndexVar="row"
+                                       rows="10"
+                                       style="width: 99%;"
+                                       binding="#{expedientes.formulariocontrariosproceso.fila}"> 
+                            <ace:column headerText="Nro.">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombres" >
+                                <h:outputText  value="#{item.apellidosnombrescon}"/>
+                            </ace:column>
+                            <ace:column  headerText="Email"  >
+                                <h:outputText  value="#{item.emailcon}"/>
+                            </ace:column>
+                            <ace:column  headerText="Teléfonos" >
+                                <h:outputText  value="#{item.telefonocon}"/>
+                            </ace:column>
+                            <ace:column  headerText="Dirección" >
+                                <h:outputText  value="#{item.direccioncon}"/>
+                            </ace:column>
+                        </ace:dataTable>  
+                    </ace:panel>
+
+                    <ace:panel header="Archivos">
+                        <h:panelGrid columns="1" width="100%">
+                            <ace:dataTable value="#{expedientes.listaarchivosproceso}"
+                                           var="documentos"
+                                           resizableColumns="true" rowIndexVar="fila"
+                                           style="width: 99%;" binding="#{expedientes.formularioarchivosprocesos.fila}">
+                                <ace:column headerText="Tipo de Archivo">
+                                    <h:outputText value="#{documentos.tipoarchivo.nombre}"   />
+                                </ace:column>
+                                <ace:column  headerText="Nombre de Archivo">
+                                    <h:outputText value="#{documentos.nombrearchivo}"/>
+                                </ace:column>
+                                <!--                                <ace:column style="text-align: right" headerText="Tamaño (Mb)">
+                                                                    <h:outputText value="#{documentos.tamano}">
+                                                                    </h:outputText>
+                                                                </ace:column>-->
+                            </ace:dataTable>  
+                        </h:panelGrid>
+                    </ace:panel> 
+                    <ace:panel header="Escritos">
+                        <h:panelGrid columns="1" width="100%">
+                            <ace:dataTable value="#{expedientes.listaescritosproceso}"
+                                           var="escrito"
+                                           resizableColumns="true"
+                                           rowIndexVar="row"
+                                           style="width: 99%;" 
+                                           binding="#{expedientes.formularioescritosproceso.fila}">
+                                <ace:column style="text-align: left" headerText="Tipo">
+                                    <h:outputText value="#{escrito.tipo}"   />
+                                </ace:column>
+                                <ace:column  headerText="Nombre">
+                                    <h:outputText value="#{escrito.nombres}" escape="false"/>
+                                </ace:column>
+                                <!--                                <ace:column  headerText="Escrito">
+                                                                    <h:outputText value="#{escrito.texto}" escape="false"/>
+                                                                </ace:column>-->
+                            </ace:dataTable>  
+                        </h:panelGrid>
+                    </ace:panel> 
+                    <ace:panel header="Informe Pagos">
+                        <h:panelGrid columns="1" width="100%">
+                            <ace:dataTable value="#{expedientes.listapaConceptospagoproceso}"
+                                           var="pago"
+                                           resizableColumns="true" rowIndexVar="fila"
+                                           style="width: 99%;" binding="#{expedientes.formulariopagosproceso.fila}">
+                                <ace:column style="text-align: left" headerText="Tipo">
+                                    <h:outputText value="#{pago.tipo}"   />
+                                </ace:column>
+                                <ace:column  headerText="Descripción">
+                                    <h:outputText value="#{pago.descripcion}" escape="false"/>
+                                </ace:column>
+                                <ace:column  headerText="Costo">
+                                    <h:outputText value="#{pago.importe}" >
+                                        <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </ace:column>
+                            </ace:dataTable>  
+                        </h:panelGrid>  
+                    </ace:panel>
+                    <ace:panel header="Historial">
+                        <h:panelGrid columns="1" width="100%">
+                            <ace:dataTable value="#{expedientes.listatrackings}"
+                                           var="tracking"
+                                           resizableColumns="true" rowIndexVar="fila"
+                                           style="width: 99%;" >
+                                <ace:column style="text-align: left" headerText="Fecha">
+                                    <h:outputText value="#{tracking.fechaingreso}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </ace:column>
+                                <ace:column  headerText="Descripción">
+                                    <h:outputText value="#{tracking.descripcion}" escape="false"/>
+                                </ace:column>
+                                <ace:column  headerText="Usuario">
+                                    <h:outputText value="#{tracking.userid}" />
+                                </ace:column>
+                            </ace:dataTable>  
+                        </h:panelGrid>
+                    </ace:panel>    
+                </ace:panel>          
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

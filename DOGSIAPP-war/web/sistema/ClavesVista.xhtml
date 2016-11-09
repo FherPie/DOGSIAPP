@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+    >
+    <h:head>
+
+    </h:head>
+    <h:body styleClass="ice-skin-xp">
+
+        <ui:composition template="../plantillas/principal.xhtml">
+            <icecore:singleSubmit/>
+            <!-- Aqui va todo el codigo de la pagina -->
+            <ui:define name="content">
+<!--                   <p:growl id="growl" showDetail="true" sticky="true" /> 
+                   <p:commandButton value="Save"  update="growl"  actionListener="#{vendedores.crear}" icon="ui-icon ui-icon-document"/>   
+                   -->
+                <ace:panel id="panel"
+                           header="#{menusc.formaSeleccionada}"
+                           closable="false"
+                           toggleable="true"
+                           >
+                    <ice:panelGrid columns="7">
+
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{vendedores.buscar()}" />
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{vendedores.crear()}"   >
+                            
+<!--                                <f:ajax render="growl"/>-->
+                            </ace:menuItem>
+                                
+                        </ace:menuBar>
+                       <ice:outputConnectionStatus/>
+                      <ace:messages/>
+                        
+               </ice:panelGrid>
+                         
+                    
+
+                </ace:panel>
+
+                <ace:panel 
+                    header="Resultado Bùsqueda"
+                    closable="false"
+                    toggleable="true"
+                    >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <ice:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{vendedores.formulario.pantalla}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{vendedores.formulario.pantalla}" 
+                                          target="tabla" fileName="datos"/>
+                    </h:panelGrid>
+                    <!--                    <h:panelGrid styleClass="centeredPanelGrid">
+                                            
+                                        </h:panelGrid>-->
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       paginatorAlwaysVisible="true"
+                                       value="#{vendedores.entidades}"
+                                       var="item"
+                                       paginator="true"
+                                       lazy="true"
+                                       resizableColumns="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="5,10,15,30,50,100"
+                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="30"
+                                       >
+<!--                            <ace:column  headerText="Registro" style="text-align: right">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>-->
+                            <ace:column style="text-align: left">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{datosLogueo.cambiarClaves(item)}" value="Cambiar Clave" icon="ui-icon ui-icon-pencil"/>
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Cédula de Identidad" sortBy="#{item.pin}" style="text-align: left"
+                                         filterBy="#{item.pin}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.pin}"/>
+                            </ace:column>
+                            <ace:column  headerText="Apellidos" sortBy="#{item.apellidos}" style="text-align: left"
+                                         filterBy="#{item.apellidos}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.apellidos}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombres" sortBy="#{item.nombres}" style="text-align: left"
+                                         filterBy="#{item.nombres}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.nombres}"/>
+                            </ace:column>
+                            <ace:column  headerText="email" sortBy="#{item.email}" style="text-align: left"
+                                         filterBy="#{item.email}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.email}"/>
+                            </ace:column>
+                            <ace:column  headerText="User id" sortBy="#{item.userid}" style="text-align: left"
+                                         filterBy="#{item.userid}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.userid}"/>
+                            </ace:column>
+                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.fecha}" style="text-align: left"
+                                         >
+                                <h:outputText  value="#{item.fecha}">
+                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Ver Todos[SI/NO]" style="text-align: left">
+                                <h:outputText  value="#{item.vertodos}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+                <ace:dialog 
+                    header="#{menusPersonal.formaSeleccionada}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{datosLogueo.formulario.mostrar}"
+                    visible="#{datosLogueo.formulario.mostrar}">
+                    <ice:panelGrid columns="2">
+
+                      
+                     
+                        <ice:outputLabel value="Clave Nueva :" />
+                        <ice:inputSecret value="#{datosLogueo.claveNueva}"/>
+                        
+                    </ice:panelGrid>
+                    <ice:panelGrid columns="2">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" action="#{datosLogueo.grabarClave()}" />
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{datosLogueo.formulario.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages/>
+
+                    </ice:panelGrid>
+                </ace:dialog>
+                
+                
+                
+
+            </ui:define>
+            <!-- Fin -->
+        </ui:composition>
+
+    </h:body>
+
+</html>

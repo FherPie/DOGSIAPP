@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:head>     
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../plantillas/principal.xhtml">
+            <ui:define name="content">
+                <ace:panel header="Grupos  Usuarios">
+                    <ace:panel header="Criterios de Búsqueda">
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Nombre: "/>
+                            <h:inputText value="#{gruposUsuarios.nombrebuscar}"/>
+                            <ace:menuBar>
+                                <ace:menuItem value="Nuevo" 
+                                              icon="ui-icon ui-icon-document" 
+                                              action="#{modulos.nuevo()}"/>
+                                <ace:menuItem value="Buscar" 
+                                              icon="ui-icon ui-icon-search" 
+                                              action="#{modulos.buscar()}"/>   
+                            </ace:menuBar>
+                        </h:panelGrid>
+                    </ace:panel>
+                    <ace:panel header="Resultados">
+                        <ace:dataTable value="#{modulos.listamodulos}" 
+                                       var="item"
+                                       paginatorAlwaysVisible="true"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       lazy="false"
+                                       rowIndexVar="rows"
+                                       rows="10"
+                                       style="width: 99%;"
+                                       binding="#{table}"> 
+                            <ace:column headerText="" style="text-align: left">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{modulos.modifica(item)}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{modulos.borra(item)}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column>   
+                            <ace:column headerText="Nro.">
+                                <h:outputText value="#{table.rowIndex+1}"/>
+                            </ace:column>
+                            <ace:column headerText="Nombre">
+                                <h:outputText value="#{item.nombre}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </ace:panel>
+                </ace:panel>
+                <ace:dialog header="Registro Módulos" modal="true" closable="false" 
+                            visible="#{modulos.formulario.mostrar}" 
+                            rendered="#{modulos.formulario.mostrar}">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Nombre: "/>
+                        <h:inputText value="#{modulos.modulo.nombre}"/>
+                    </h:panelGrid>
+                    <ace:menuBar autoSubmenuDisplay="true" >               
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      rendered="#{modulos.formulario.nuevo}" 
+                                      action="#{modulos.insertar()}"/>   
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      action="#{modulos.grabar()}" 
+                                      rendered="#{modulos.formulario.modificar}" />                          
+                        <ace:menuItem action="#{modulos.borrar()}" 
+                                      value="Esta seguro de Borrar el registro?" 
+                                      rendered="#{modulos.formulario.borrar}"/>
+                        <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                      action="#{modulos.formulario.cancelar()}"/>
+                    </ace:menuBar>
+                </ace:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

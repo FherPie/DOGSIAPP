@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:head>
+   
+    </h:head>
+    <h:body styleClass="ice-skin-xp">
+  <ui:composition template="../plantillas/principal.xhtml">
+            <icecore:singleSubmit/>
+            <!-- Aqui va todo el codigo de la pagina -->
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{menusc.formaSeleccionada}"
+                           closable="false"
+                           toggleable="true"
+                           >
+                    <ice:panelGrid columns="7">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{procuradores.buscar()}"/>
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{procuradores.crear()}"/>
+                        </ace:menuBar>
+                        <ice:outputConnectionStatus/>
+                        <ace:messages/>
+                    </ice:panelGrid>
+                </ace:panel>
+                <ace:panel 
+                    header="Resultado Bùsqueda"
+                    closable="false"
+                    toggleable="true"
+                    >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <ice:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{procuradores.formulario.pantalla}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{procuradores.formulario.pantalla}" 
+                                          target="tabla" fileName="datos"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       paginatorAlwaysVisible="true"
+                                       value="#{procuradores.procuradores}"
+                                       var="item"
+                                       paginator="true"
+                                       lazy="true"
+                                       resizableColumns="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="5,10,15,30,50,100"
+                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="30">
+                            <ace:column  headerText="Registro" style="text-align: right">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left"  headerText="Acciones">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{procuradores.modificar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{procuradores.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Cédula de Identidad" sortBy="#{item.procurador.pin}" style="text-align: left"
+                                         filterBy="#{item.procurador.pin}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.procurador.pin}"/>
+                            </ace:column>
+                            <ace:column  headerText="Apellidos" sortBy="#{item.procurador.apellidos}" style="text-align: left"
+                                         filterBy="#{item.procurador.apellidos}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.procurador.apellidos}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombres" sortBy="#{item.procurador.nombres}" style="text-align: left"
+                                         filterBy="#{item.procurador.nombres}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.procurador.nombres}"/>
+                            </ace:column>
+                            <ace:column  headerText="email" sortBy="#{item.procurador.email}" style="text-align: left"
+                                         filterBy="#{item.procurador.email}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.procurador.email}"/>
+                            </ace:column>
+                            <ace:column  headerText="Colegiado" sortBy="#{item.colegiado}" style="text-align: left"
+                                         filterBy="#{item.colegiado}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.colegiado}"/>
+                            </ace:column>
+                            <ace:column  headerText="Partido" sortBy="#{item.partidojudicial}" style="text-align: left"
+                                         filterBy="#{item.partidojudicial}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.partidojudicial}"/>
+                            </ace:column>
+                    </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+                <ace:dialog 
+                    header="#{menusc.formaSeleccionada}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{procuradores.formulario.mostrar}"
+                    visible="#{procuradores.formulario.mostrar}">
+                    <ace:tabSet>
+                        <ace:tabPane>
+                            <f:facet name="label">Informacion General</f:facet>
+                          
+                              <ice:panelGrid columns="2">
+                                <ice:outputLabel value="C.I.:" for="pin" />
+                                <ice:inputText id="pin" value="#{procuradores.entidad.pin}" title="Pin"/>
+                                <ice:outputLabel value="Nombres:" for="nombres" />
+                                <ice:inputText id="nombres" value="#{procuradores.entidad.nombres}" title="Nombres" />
+                                <ice:outputLabel value="Apellidos:" for="apellidos" />
+                                <ice:inputText id="apellidos" value="#{procuradores.entidad.apellidos}" title="Apellidos" />
+                                <ice:outputLabel value="e-mail:" for="email" />
+                                <ice:inputText id="email" value="#{procuradores.entidad.email}" title="Email" />
+                                <ice:outputLabel value="Colegiado:" for="colegiado" />
+                                <ice:inputText id="colegiado" value="#{procuradores.procurador.colegiado}" title="Userid" />
+                                <ice:outputLabel value="Partido:" />
+                                <ice:inputText value="#{procuradores.procurador.partidojudicial}"/>
+                            </ice:panelGrid>
+                        </ace:tabPane>
+                        <ace:tabPane>
+                            <f:facet name="label">Dirección</f:facet>
+                              <ice:panelGrid columns="2">
+                                <ice:outputLabel value="País:" />
+                                <ice:selectOneMenu value="#{provincias.pais}" partialSubmit="true" >
+                                    <f:selectItems value="#{paises.paisesV}"/>
+                                </ice:selectOneMenu>
+                                <ice:outputLabel value="Provincia:" rendered="#{provincias.pais!=null}"   />
+                                <ice:selectOneMenu value="#{cantones.canton}" partialSubmit="true"   rendered="#{provincias.pais!=null}"    >
+                                    <f:selectItems value="#{provincias.provinciasV}"/>
+                                </ice:selectOneMenu>
+                                <ice:outputLabel value="Cantón:" rendered="#{cantones.canton!=null}"  />
+                                <ice:selectOneMenu value="#{parroquias.parroquia}" rendered="#{cantones.canton!=null}"  partialSubmit="true">
+                                    <f:selectItems value="#{cantones.cantonesV}"/>
+                                </ice:selectOneMenu>
+                                <ice:outputLabel value="Parroquia:"   rendered="#{parroquias.parroquia!=null}" />
+                                <ice:selectOneMenu value="#{procuradores.direccion.parroquia}" partialSubmit="true" rendered="#{parroquias.parroquia!=null}"  >
+                                    <f:selectItems value="#{parroquias.parroquiasV}"/>
+                                </ice:selectOneMenu>
+                            </ice:panelGrid>
+                            <ice:panelGrid columns="4">
+                                <ice:outputLabel value="Calle Primaria:" for="primaria" />
+                                <ice:inputText id="primaria" value="#{procuradores.direccion.primaria}" title="Primaria" />
+                                <ice:outputLabel value="Calle Secundaria:" for="secundaria" />
+                                <ice:inputText id="secundaria" value="#{procuradores.direccion.secundaria}"   ice:inputTexttitle="Secundaria" />
+                                <ice:outputLabel value="Número:" for="numero" />
+                                <ice:inputText id="numero" value="#{procuradores.direccion.numero}" title="Numero" />
+                                <ice:outputLabel value="Piso:" for="piso" />
+                                <ice:inputText id="piso" value="#{procuradores.direccion.piso}" title="Piso" />
+                                <ice:outputLabel value="Teléfono 1:" />
+                                <ice:inputText value="#{procuradores.direccion.telefono1}" title="Teléfono" />
+                                <ice:outputLabel value="Teléfono 2:" />
+                                <ice:inputText value="#{procuradores.direccion.telefono2}" title="Teléfono" />
+                            </ice:panelGrid>
+                            <ice:panelGrid columns="2">
+                                <ice:outputLabel value="Referencia:" for="referencia" />
+                                <ice:inputTextarea id="referencia" value="#{procuradores.direccion.referencia}" 
+                                                   rows="4" cols="20" title="Referencia" />
+                            </ice:panelGrid>
+                        </ace:tabPane>
+                    </ace:tabSet>
+                    <ice:panelGroup>
+
+                    </ice:panelGroup>
+                    <ice:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{procuradores.formulario.nuevo}" 
+                                          action="#{procuradores.insertar()}"/>
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                          action="#{procuradores.grabar()}" 
+                                          rendered="#{procuradores.formulario.modificar}" />
+                            <ace:menuItem action="#{procuradores.borrar()}" 
+                                          value="Esta seguro de Borrar el registro?" 
+                                          icon="ui-icon ui-icon-trash"
+                                          rendered="#{procuradores.formulario.borrar}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{procuradores.formulario.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages />
+                        <!--<h:messages style="color: red;font-style: italic;font-weight: bold"/>--> 
+                    </ice:panelGrid>
+                </ace:dialog>
+
+            </ui:define>
+            <!-- Fin -->
+        </ui:composition>
+
+    </h:body>
+
+</html>

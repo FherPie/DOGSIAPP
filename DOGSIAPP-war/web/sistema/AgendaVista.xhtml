@@ -1,0 +1,252 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:head>
+   
+    </h:head>
+    <h:body styleClass="ice-skin-xp">
+        <ui:composition template="../plantillas/principal.xhtml">
+            <icecore:singleSubmit/>
+            <!-- Aqui va todo el codigo de la pagina -->
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{menusc.formaSeleccionada}"
+                           closable="false"
+                           toggleable="true"
+                           >
+                    <ice:panelGrid columns="7">
+                        <!--                        <ice:outputLabel value="Maestro:" />
+                                                <ice:selectOneMenu value="#{tablaDeCodigos.maestroEntidad}" partialSubmit="true">
+                                                    <f:selectItems value="#{maestros.getcomboMaestroEspacio()}"/>
+                                                </ice:selectOneMenu>-->
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{agenda.buscar()}"/>
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{agenda.crear()}"/>
+                        </ace:menuBar>
+                        <ice:outputConnectionStatus/>
+                        <ace:messages/>
+                    </ice:panelGrid>
+
+                </ace:panel>
+                <!--                <ace:panel>
+                                    
+                                </ace:panel>-->
+                <ace:panel 
+                    header="Resultado Bùsqueda"
+                    closable="false"
+                    toggleable="true"
+                    >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <h:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{agenda.formulario.pantalla}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{agenda.formulario.pantalla}" 
+                                          target="tabla" fileName="datos"/>
+                    </h:panelGrid>
+                    <!--                    <h:panelGrid styleClass="centeredPanelGrid">
+                                            
+                                        </h:panelGrid>-->
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       paginatorAlwaysVisible="true"
+                                       value="#{agenda.agendas}"
+                                       var="item"
+                                       lazy="true"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="5,10,15,50"
+                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="5"
+                                       binding="#{tablaDeCodigos.formulario.fila}">
+                            <!--                            <ace:column  headerText="Registro" style="text-align: right">
+                                                            <h:outputText value="#{row+1}"/>
+                                                        </ace:column>-->
+
+                            <!--                            <ace:column id="exp" headerText="Destinatarios">
+                                                                  <ace:expansionToggler id="expTogg" />
+                                                        </ace:column>-->
+                            <ace:column style="text-align: left" headerText="Acciones">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <!--<ace:menuItem action="#{agenda.modificardestinatarios()}" value="Ver" icon="ui-icon ui-icon-search"/>-->
+                                    <ace:menuItem action="#{agenda.modificar()}" value="Ver" icon="ui-icon ui-icon-search"/>
+                                    <ace:menuItem action="#{agenda.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Fecha Recordatorio" sortBy="#{item.fecharecordatorio}" style="text-align: left" >
+                                <h:outputText  value="#{item.fecharecordatorio}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Asunto" sortBy="#{item.asunto}"  filterBy="#{item.asunto}" style="text-align: left">
+                                    <h:outputText  value="#{item.asunto}"/>
+                                </ace:column>                           
+                            <ace:column  headerText="Remitente"  style="text-align: left">
+                                <h:outputText  value="#{item.entidad.toString()}"/>
+                            </ace:column>
+
+                            <!--                             <ace:rowExpansion id="rowExp"/>-->
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+                <ace:dialog 
+                    header="#{menusc.formaSeleccionada}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{agenda.formulario.mostrar}"
+                    visible="#{agenda.formulario.mostrar}">
+                    <ace:panel header="Recordatorio"> 
+                    <ice:panelGroup>
+                        <ice:panelGrid columns="2">
+                            <ice:outputLabel value="Asunto:" for="asunto" class="bold" />
+                            <ice:inputText id="asunto" value="#{agenda.recordatorio.asunto}" title="asunto"  readonly="#{!agenda.formulario.nuevo}"/>
+                            <ice:outputLabel value="Texto:" for="texto" class="bold" />
+                            <ice:inputTextarea cols="40" rows="5" id="texto" value="#{agenda.recordatorio.texto}" title="texto"  readonly="#{!agenda.formulario.nuevo}"  />
+                            <h:outputLabel value="Fecha y hora recordatorio : "  class="bold" />
+                            <ace:dateTimeEntry navigator="true" value="#{agenda.recordatorio.fecharecordatorio}" 
+                                               popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                               pattern="dd/MM/yyyy HH:mm" label="dd/MM/yyyy HH:mm" labelPosition="infield"
+                                               readonly="#{!agenda.formulario.nuevo}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                            </ace:dateTimeEntry>
+                            <ice:outputLabel value="No Recordarme a mi:"  class="bold" />
+                            <ace:checkboxButton  value="#{agenda.recordatorio.autoenvio}" disabled="#{!agenda.formulario.nuevo}" />
+                         </ice:panelGrid>
+                        </ice:panelGroup>
+                    </ace:panel>
+                    <ace:panel header="Destinatarios">  
+                            <ice:panelGrid columns="2" >
+                                <ace:menuBar autoSubmenuDisplay="true" rendered="#{agenda.formulario.nuevo}" >
+                                    <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-disk" rendered="#{agenda.formulario.nuevo}" 
+                                                  action="#{agenda.nuevodestina()}"/>
+
+                                </ace:menuBar>
+                                <ace:messages />
+                                <!--<h:messages style="color: red;font-style: italic;font-weight: bold"/>--> 
+                            </ice:panelGrid>
+                        
+                            <ace:dataTable id="tabla1" 
+                                       paginatorAlwaysVisible="true"
+                                       value="#{agenda.destinatarios}"
+                                       var="item"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="5,10,15,50"
+                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="5">
+                            <ace:column style="text-align: left" headerText="Acciones"  rendered="#{agenda.formulario.nuevo}" >
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{agenda.eliminadesti(item)}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Nombres" sortBy="#{item.nombres}" style="text-align: left" >
+                                <h:outputText  value="#{item.nombres}">
+                                </h:outputText>
+                            </ace:column>
+                             <ace:column  headerText="Email"  style="text-align: left">
+                                 <h:outputText  value="#{item.email}">
+                                 
+                                 </h:outputText>
+                                 
+                            </ace:column>                            
+<!--                            <ace:column  headerText="Teléfono"  style="text-align: left">
+                                <h:outputText  value="#{item.telefono}"/>
+                            </ace:column>-->
+                        </ace:dataTable>     
+                    </ace:panel>
+                    <ice:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{agenda.formulario.nuevo}" 
+                                          action="#{agenda.insertar()}"/>
+                            <!--                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                                      action="#{tablaDeCodigos.grabar()}" 
+                                                                      rendered="#{tablaDeCodigos.formulario.modificar}" />-->
+                            <ace:menuItem action="#{agenda.borrar()}" 
+                                          icon="ui-icon ui-icon-trash"
+                                          value="Esta seguro de Borrar el registro?" 
+                                          rendered="#{agenda.formulario.borrar}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{agenda.formulario.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages />
+                        <!--<h:messages style="color: red;font-style: italic;font-weight: bold"/>--> 
+                    </ice:panelGrid>
+                </ace:dialog>
+       <ace:dialog 
+                    header="#{menusc.formaSeleccionada}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{agenda.formulariodestinatario.mostrar}"
+                    visible="#{agenda.formulariodestinatario.mostrar}">
+                    <ice:panelGroup>
+      <ice:panelGrid columns="2" rendered="#{agenda.formulariodestinatario.nuevo}"  >
+        <ice:outputLabel value=" Buscar Nombre:" />
+        <ice:selectInputText  listValue="#{agenda.listaUsuarios}" value="#{agenda.apellidos}"
+                              listVar="vendedoresLista" rows="5" 
+                              valueChangeListener="#{agenda.cambiaApellido}" width="300px"  partialSubmit="true" actionListener="#{agenda.cambianombre()}">
+            <f:facet name="selectInputText">
+                <ice:panelGrid columnClasses="tipo" columns="3" id="gcolumnas" width="300px" style="background-color: lightgrey;text-align: left">
+                    <ice:outputText value="#{vendedoresLista.apellidos}"/>
+                    <ice:outputText value="#{vendedoresLista.nombres}"/>
+                    <ice:outputText value="#{vendedoresLista.pin}"/>
+                </ice:panelGrid>
+            </f:facet>
+        </ice:selectInputText>
+    </ice:panelGrid>
+    <ace:panel style="height: 100px">
+                  <ice:panelGrid columns="2" >
+                    <ice:outputLabel value="Nombres:" for="nombreidca" />
+                    <ice:inputText id="nombreidca" value="#{agenda.destinatario.nombres}" />
+                    <ice:outputLabel value="Email:" for="email" />
+                    <ice:inputText id="email" value="#{agenda.destinatario.email}"  >
+                      <f:validator  validatorId="com.proyectoabogados.utilitarios.ValidadorEmail"/>
+                    </ice:inputText>
+                     <ice:outputLabel value="Enviar Vía Email:" for="evemail" />
+                     <ace:checkboxButton  value="#{agenda.destinatario.mail}"/>
+                </ice:panelGrid>
+    </ace:panel>
+                    </ice:panelGroup>
+                    <ice:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{agenda.formulariodestinatario.nuevo}" 
+                                          action="#{agenda.insertardestibna()}"/>
+                            <ace:menuItem action="#{agenda.eliminardesti()}" 
+                                          icon="ui-icon ui-icon-trash"
+                                          value="Esta seguro de Borrar el registro?" 
+                                          rendered="#{agenda.formulariodestinatario.borrar}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{agenda.formulariodestinatario.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages />
+                    </ice:panelGrid>
+                </ace:dialog>
+            </ui:define>
+            <!-- Fin -->
+        </ui:composition>
+
+    </h:body>
+
+</html>

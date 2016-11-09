@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:body>
+        <ui:composition template="../plantillas/principal.xhtml">
+            <ui:define name="content">
+                <ace:panel header="Procesos">
+                    <ace:panel header="Criterios de Búsqueda">
+                        <h:panelGrid columns="2">
+                        <ace:menuBar>
+                                <ace:menuItem value="Nuevo" 
+                                              icon="ui-icon ui-icon-document" 
+                                              action="#{procesos.nuevo()}"/>
+                                <ace:menuItem value="Buscar" 
+                                              icon="ui-icon ui-icon-search" 
+                                              action="#{procesos.buscar()}"/>   
+                         </ace:menuBar>
+                        </h:panelGrid>
+                    </ace:panel>
+                    <ace:panel header="Resultados">
+                        <ace:dataTable value="#{procesos.listaprocesos}" 
+                                       var="item"
+                                       paginatorAlwaysVisible="true"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       lazy="false"
+                                       rowIndexVar="rows"
+                                       rows="10"
+                                       style="width: 99%;"
+                                       binding="#{table}"> 
+                            <ace:column headerText="" style="text-align: left">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{procesos.modifica(item)}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{procesos.borra(item)}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column>   
+                            <ace:column headerText="Nro.">
+                                <h:outputText value="#{table.rowIndex+1}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombre" sortBy="#{item.nombre}" style="text-align: left"
+                                         filterBy="#{item.nombre}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.nombre}"/>
+                            </ace:column>
+                            <ace:column headerText="Costo">
+                                <h:outputText value="#{item.costoproceso}"/>
+                            </ace:column>
+
+
+                        </ace:dataTable>
+                    </ace:panel>
+                </ace:panel>
+                <ace:dialog header="Procesos" modal="true" closable="false" 
+                            visible="#{procesos.formulario.mostrar}" 
+                            rendered="#{procesos.formulario.mostrar}">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Nombre: "/>
+                        <h:inputText value="#{procesos.proceso.nombre}"/>
+                        
+                       <ice:outputLabel value="Costo:"  />
+                        <ice:inputText  value="#{procesos.proceso.costoproceso}" />  
+                    </h:panelGrid>
+                    <ace:menuBar autoSubmenuDisplay="true" >               
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      rendered="#{procesos.formulario.nuevo}" 
+                                      action="#{procesos.insertar()}"/>   
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      action="#{procesos.grabar()}" 
+                                      rendered="#{procesos.formulario.modificar}" />                          
+                        <ace:menuItem action="#{procesos.borrar()}" 
+                                      value="Esta seguro de Borrar el registro?" 
+                                      rendered="#{procesos.formulario.borrar}"/>
+                        <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                      action="#{procesos.cancelar()}"/>
+                    </ace:menuBar>
+                </ace:dialog>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+         >
+    <ui:composition>        
+        <ace:menuBar id="mainBar" autoSubmenuDisplay="true" model="#{seguridad.modelo}" rendered="#{seguridad.modelo!=null}" style="text-align: left"/>
+        <ace:panel>
+            <ice:panelGrid columns="2" width="50%">
+             
+    
+                
+      <h:commandLink id="printTblLnk" action="#{seguridad.irinicio()}"   >
+          <h:graphicImage id="printerImg2" value="../resources/images/Home_Icon.jpg"  width="50px"  height="50px" alt="Impresión"/>
+    </h:commandLink>
+                
+                
+                
+            <p> #{seguridad.message}</p>
+
+            </ice:panelGrid>
+
+        </ace:panel>
+    </ui:composition>
+</html>
+

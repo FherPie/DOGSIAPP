@@ -1,0 +1,17 @@
+/* 
+    Document   : default
+    Created on : 25/02/2015, 09:19:38 PM
+    Author     : PATO
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+
+.ui-corner-all {
+    border-radius: 0px;
+}
+

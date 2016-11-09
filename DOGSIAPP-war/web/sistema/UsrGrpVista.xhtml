@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Document   : PrincipalVista
+    Created on : 28/08/2011, 11:31:00 AM
+    Author     : edwin
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:head>   
+
+    </h:head>
+    <h:body styleClass="ice-skin-xp">
+        <h:form id="forma">
+               <ui:composition template="../plantillas/principal.xhtml">
+
+                <!-- Aqui va todo el codigo de la pagina -->
+                <ui:define name="content">
+                    <ace:panel id="panel"
+                               header="#{menusc.formaSeleccionada}"
+                               closable="false"
+                               toggleable="true"
+                               >
+
+                        <ui:include src="../BuscarTodos.xhtml" rendered="#{!usuarioGrupo.formulario.mostrar}"/>
+                        <ice:panelGrid columns="2" rendered="#{!usuarioGrupo.formulario.mostrar}" >
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{usuarioGrupo.buscar()}"/>
+                            </ace:menuBar>
+                        </ice:panelGrid>
+
+                        <ice:panelGrid columns="2" rendered="#{usuarioGrupo.formulario.mostrar}">
+<!--                            <ice:outputLabel value="Nombres :" />
+                            <ice:outputLabel  value="#{usuarios.entidadSeleccionado.nombres}" />
+                            <ice:outputLabel value="Apellidos :" for="apellidos" />
+                            <ice:outputLabel  value="#{usuarios.entidadSeleccionado.apellidos}"  />
+                            <ice:outputLabel value="Email :"  />
+                            <ice:outputLabel value="#{usuarios.entidadSeleccionado.email}"/>-->
+                            <ice:outputLabel value="Grupo : "/>
+                            <ice:selectOneMenu value="#{usuarioGrupo.grupoUsuario.grupo}">
+                                <f:selectItems value="#{tablaDeCodigos.comboGrupoUsuarios}"/>
+                            </ice:selectOneMenu>
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"  action="#{usuarioGrupo.grabar()}"/>
+                            </ace:menuBar>
+                        </ice:panelGrid>
+                    </ace:panel>
+                </ui:define>
+                <!-- Fin -->
+            </ui:composition>
+        </h:form>
+    </h:body>
+
+</html>

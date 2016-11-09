@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:head>   
+    </h:head>
+    <h:body>
+        <ui:composition template="../plantillas/principal.xhtml">
+            <ui:define name="content">
+                <ace:panel header="#{menusc.formaSeleccionada}">
+                    <ace:panel header="Criterios de Búsqueda">
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Nombre: "/>
+                            <h:inputText value="#{tribunales.nombrebuscar}"/>
+                            <ace:menuBar>
+                                <ace:menuItem value="Nuevo" 
+                                              icon="ui-icon ui-icon-document" 
+                                              action="#{tribunales.nuevo()}"/>
+                                <ace:menuItem value="Buscar" 
+                                              icon="ui-icon ui-icon-search" 
+                                              action="#{tribunales.buscar()}"/>   
+                            </ace:menuBar>
+                        </h:panelGrid>
+                    </ace:panel>
+                    <ace:panel header="Resultados">
+                        <ace:dataTable value="#{tribunales.listatribunales}" 
+                                       var="item"
+                                       paginatorAlwaysVisible="true"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       lazy="false"
+                                       rowIndexVar="rows"
+                                       rows="10"
+                                       style="width: 99%;"
+                                       binding="#{table}"> 
+                            <ace:column headerText="Acciones" style="text-align: left" >
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{tribunales.modifica(item)}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{tribunales.borra(item)}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column>   
+                            <ace:column headerText="Nro.">
+                                <h:outputText value="#{table.rowIndex+1}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombre" sortBy="#{item.nombre}" style="text-align: left"
+                                         filterBy="#{item.nombre}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.nombre}"/>
+                            </ace:column>
+                             <ace:column headerText="Descripción">
+                                  <h:outputText value="#{item.descripcion}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </ace:panel>
+                </ace:panel>
+                <ace:dialog header="#{menusc.formaSeleccionada}" modal="true" closable="false" 
+                            visible="#{tribunales.formulario.mostrar}" 
+                            rendered="#{tribunales.formulario.mostrar}">
+                    
+                    
+                    <ace:tabSet>
+                        
+                        <ace:tabPane label="#{menusc.formaSeleccionada}">
+                            
+                          
+                     
+                    <h:panelGrid columns="2">
+                    <h:outputLabel value="Nombre: "/>
+                  <h:inputText value="#{tribunales.tribunal.nombre}"/>
+                        
+                 <ice:outputLabel value="Descrición:"  />
+                 <ice:inputTextarea cols="40" rows="5" value="#{tribunales.tribunal.descripcion}"/>
+                    </h:panelGrid>
+                  </ace:tabPane>  
+                    
+                    
+                        <ace:tabPane label="Jurisdicción">  
+                    <ice:panelGrid columns="2">
+                                <ice:outputLabel value="País:" />
+                                <ice:selectOneMenu value="#{provincias.pais}" partialSubmit="true" >
+                                    <f:selectItems value="#{paises.paisesV}"/>
+                                </ice:selectOneMenu>
+                                <ice:outputLabel value="Provincia:" rendered="#{provincias.pais!=null}"   />
+                                <ice:selectOneMenu value="#{cantones.canton}" partialSubmit="true"   rendered="#{provincias.pais!=null}"    >
+                                    <f:selectItems value="#{provincias.provinciasV}"/>
+                                </ice:selectOneMenu>
+<!--                                <ice:outputLabel value="Ciudad:"   />
+                                <ice:selectOneMenu value="#{cantones.canton}"  partialSubmit="true">
+                                    <f:selectItems value="#{provincias.provinciasV}"/>
+                                </ice:selectOneMenu>-->
+                                <ice:outputLabel value="Cantón:" rendered="#{cantones.canton!=null}"  />
+                                <ice:selectOneMenu value="#{parroquias.parroquia}" rendered="#{cantones.canton!=null}"  partialSubmit="true">
+                                    <f:selectItems value="#{cantones.cantonesV}"/>
+                                </ice:selectOneMenu>
+                                <ice:outputLabel value="Parroquia:"   rendered="#{parroquias.parroquia!=null}" />
+                                <ice:selectOneMenu value="#{tribunales.jurisdiccion}" partialSubmit="true" rendered="#{parroquias.parroquia!=null}"  >
+                                    <f:selectItems value="#{parroquias.parroquiasV}"/>
+                                </ice:selectOneMenu>
+                            </ice:panelGrid>
+                            
+                            </ace:tabPane>
+                     </ace:tabSet> 
+                    
+                    
+                    <ace:menuBar autoSubmenuDisplay="true" >               
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      rendered="#{tribunales.formulario.nuevo}" 
+                                      action="#{tribunales.insertar()}"/>   
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      action="#{tribunales.grabar()}" 
+                                      rendered="#{tribunales.formulario.modificar}" />                          
+                        <ace:menuItem action="#{tribunales.borrar()}" 
+                                      value="Esta seguro de Borrar el registro?" 
+                                      rendered="#{tribunales.formulario.borrar}"/>
+                        <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                      action="#{tribunales.cancelar()}"/>
+                    </ace:menuBar>
+                </ace:dialog>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

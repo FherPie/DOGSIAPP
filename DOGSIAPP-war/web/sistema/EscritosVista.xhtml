@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"     
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      >
+    <h:body>   
+        <ui:composition template="../plantillas/principal.xhtml">
+            <ui:define name="content">
+                
+                
+            <ace:dialog header="#{menusc.formaSeleccionada}" modal="true" closable="false" 
+                            visible="#{!escritos.formulario.mostrar}" 
+                            rendered="#{!escritos.formulario.mostrar}">
+                     <ace:panel header="Criterios de Búsqueda">
+                        <h:panelGrid columns="2">
+                          <ice:outputLabel value="Tipo:" />
+                            <ice:selectOneMenu value="#{escritos.tipo}">
+                                <f:selectItems value="#{tablaDeCodigos.comboTipoEscritos}"/>
+                            </ice:selectOneMenu>
+                            <h:outputText value="Buscar en Texto: "/>
+                            <h:inputText value="#{escritos.nombrebuscar}"/>
+                            <ace:menuBar>
+                                <ace:menuItem value="Nuevo" 
+                                              icon="ui-icon ui-icon-document" 
+                                              action="#{escritos.nuevo()}"/>
+                                <ace:menuItem value="Buscar" 
+                                              icon="ui-icon ui-icon-search" 
+                                              action="#{escritos.buscar()}"/> 
+                              <ace:menuItem value="Salir" 
+                                              icon="ui-icon ui-icon-close" 
+                                              action="#{escritos.irprincipio()}"/> 
+                            </ace:menuBar>
+                        </h:panelGrid>
+                    </ace:panel>
+                    <ace:panel header="Resultados">
+        
+                 
+               <ace:dataTable value="#{escritos.listaescritos}" 
+                                       var="item"
+                                       paginatorAlwaysVisible="true"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       lazy="false"
+                                       rowIndexVar="rows"
+                                       rows="10"
+                                       style="width: 99%;"
+                                       binding="#{table}"> 
+                            <ace:column headerText="" style="text-align: left">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{escritos.modifica(item)}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{escritos.borra(item)}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column>   
+                            <ace:column headerText="Nro.">
+                                <h:outputText value="#{table.rowIndex+1}"/>
+                            </ace:column>
+                             <ace:column  headerText="Nombre" sortBy="#{item.nombres}" style="text-align: left"
+                                filterBy="#{item.nombres}" filterMatchMode="contains">
+                             <h:outputText  value="#{item.nombres}"/>
+                            </ace:column>
+                            <ace:column  headerText="Tipo" sortBy="#{item.tipo.nombre}" style="text-align: left"
+                                         filterBy="#{item.tipo.nombre}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.tipo.nombre}"/>
+                            </ace:column>
+<!--                            <ace:column headerText="Texto">
+                                <h:outputText value="#{item.texto}" escape="false"/>
+                            </ace:column>-->
+                        </ace:dataTable>
+                           </ace:panel>
+                </ace:dialog>   
+                
+                <ace:panel header="#{menusc.formaSeleccionada}" rendered="#{escritos.formulario.mostrar}">
+                    <h:panelGrid columns="2">
+                      <ace:menuBar autoSubmenuDisplay="true" >               
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      rendered="#{escritos.formulario.nuevo}" 
+                                      action="#{escritos.insertar()}"  />   
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                      action="#{escritos.grabar()}" 
+                                      rendered="#{escritos.formulario.modificar}" />                          
+                        <ace:menuItem action="#{escritos.borrar()}" 
+                                      value="Esta seguro de Borrar el registro?" 
+                                      rendered="#{escritos.formulario.borrar}"/>
+                        <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                      action="#{escritos.cancelar()}"/>
+                    </ace:menuBar>
+                   </h:panelGrid>
+                    <h:panelGrid columns="2">
+                       <ice:outputLabel value="Tipo:" />
+                            <ice:selectOneMenu value="#{escritos.escrito.tipo}">
+                                        <f:selectItems value="#{tablaDeCodigos.comboTipoEscritos}"/>
+                            </ice:selectOneMenu>
+                                    <h:outputLabel value="Nombre: "/>
+                                    <ice:inputText value="#{escritos.escrito.nombres}"/>
+                       <h:outputLabel value="Texto: "/>
+                        <h:outputLabel value=""/>
+                      <ace:messages/>
+                   </h:panelGrid>
+                    
+                    <h:panelGrid columns="1" width="100%">
+                       <ace:panel id="panel">
+                           <ace:richTextEntry value="#{escritos.escrito.texto}"
+                                language="es"
+                                skin="kama"
+                                toolbar="Default"
+                                saveOnSubmit="True"
+                                height="350">
+                            <ace:ajax event="save" execute="@all" render="@all" />
+                        </ace:richTextEntry>           
+                      </ace:panel>      
+                    </h:panelGrid>
+                </ace:panel>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+
+
