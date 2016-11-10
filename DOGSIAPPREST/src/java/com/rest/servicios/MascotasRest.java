@@ -33,7 +33,7 @@ import org.json.JSONObject;
 
 /**
  *
- * @author evconsul
+ * @author Esta es un aprueba de andres
  */
 @Stateless(name = "Mascotas")
 @Path("Mascotas")
