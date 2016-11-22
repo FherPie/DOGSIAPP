@@ -7,7 +7,9 @@ package com.rest.servicios;
 
 //import apple.laf.JRSUIState;
 import com.appdog.entidades.Mascotas;
+import com.appdog.excepciones.BorrarException;
 import com.appdog.excepciones.ConsultarException;
+import com.appdog.excepciones.GrabarException;
 import com.appdog.excepciones.InsertarException;
 import com.appdog.servicios.CodigosFacade;
 import com.appdog.servicios.GrupousuarioFacade;
@@ -21,8 +23,10 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -98,8 +102,43 @@ public class MascotasRest {
             mascotas.put(json);
         }
         return Response.ok("" + mascotas + "").build();
+    }
+    
+    
+    @GET
+    @Path("/xid/{id}")
+    @Produces({"application/json"})
+    public Response getMascota(@PathParam("id") String id) throws ConsultarException {
+        JSONArray mascotas = new JSONArray();
+        Integer idm = Integer.parseInt(id);
+        Mascotas m= ejbMascotas.find(idm);
+        JSONObject json = new JSONObject();
+            try {
+                json.put("id", m.getId());
+                json.put("nombres", m.getNombres());
+                json.put("apellidos", m.getApellidos() == null ? "" : m.getApellidos() );
+                json.put("raza", m.getRaza());
+                json.put("color1", m.getColor1());
+                json.put("color2",  m.getColor2() == null ? "" : m.getColor2());
+                json.put("dueno",  m.getDueno() == null ? "" : m.getDueno());
+                json.put("responsable",  m.getResponsable() == null ? "" : m.getResponsable());
+                json.put("tipopelo", m.getTipopelo()  );
+                json.put("edad", m.getEdad());
+                json.put("edad", m.getEdad());
+                json.put("status", m.getStatus());
+                json.put("observacion", m.getObservacion());
+                if(m.getFoto()!=null){
+                json.put("pin", new String(Base64.encode(m.getFoto())));
+                }
+            } catch (JSONException ex) {
+                Logger.getLogger(MascotasRest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            mascotas.put(json);
+        return Response.ok("" + mascotas + "").build();
 
     }
+
+
 
     @POST
     @Path("/registro")
@@ -150,5 +189,85 @@ public class MascotasRest {
 
         return Response.ok("" + mensajes + "").build();
     }
+    
+    
+    @PUT
+    @Path("/registro")
+    @Consumes("application/json")
+    @Produces({"application/json"})
+    public Response editarMascota(Mascotas enti) throws ConsultarException {
+        JSONArray mensajes = new JSONArray();
+        JSONObject json = new JSONObject();
+        try {
+            entidad = new Mascotas();
+            entidad = (Mascotas) enti;
+            String base64Image = entidad.getPin();
+            byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+            entidad.setPin(null);
+            String Mensaje = null;
+            try {
+                entidad.setFoto(imageBytes);
+                entidad.setActivo(Boolean.TRUE);
+                ejbMascotas.edit(entidad, "ds");
+                json = new JSONObject();
+                json.append("Mensaje", "Edición realizado "+entidad.getNombres());
+                json.append("tipo", 1);
+                mensajes.put(json);
+                json = new JSONObject();
+                json.put("id", entidad.getId());
+                json.put("nombres", entidad.getNombres());
+                json.put("apellidos", entidad.getApellidos() == null ? "" : entidad.getApellidos() );
+                json.put("raza", entidad.getRaza());
+                json.put("color1", entidad.getColor1());
+                json.put("color2",  entidad.getColor2() == null ? "" : entidad.getColor2());
+                json.put("tipopelo", entidad.getTipopelo());
+                json.put("edad", entidad.getEdad());
+                json.put("edad", entidad.getEdad());
+                json.put("status", entidad.getStatus());
+                json.put("observacion", entidad.getObservacion());
+                if(entidad.getFoto()!=null){
+                json.put("pin", new String(Base64.encode(entidad.getFoto())));
+                }
+            } catch (GrabarException ex) {
+                System.out.println("Causa: " + ex.getCause() + "Mensaje: " + ex.getMessage());
+                Logger.getLogger(MascotasRest.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
+        } catch (JSONException ex) {
+            Logger.getLogger(MascotasRest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        mensajes.put(json);
+
+        return Response.ok("" + mensajes + "").build();
+    }
+    
+    
+    @DELETE
+    @Path("/xid/{id}")
+    @Produces({"application/json"})
+    public Response borrarMascota(@PathParam("id")Integer id) throws ConsultarException {
+      
+        Mascotas m= ejbMascotas.find(id);
+        JSONObject json = new JSONObject();
+//        JSONArray mensajes = new JSONArray();
+        try {
+            try {
+                ejbMascotas.remove(m, "ds");
+                json = new JSONObject();
+                json.append("Mensaje", "Eliminado");
+                json.append("tipo", 1);
+//                mensajes.put(json);
+            } catch (BorrarException ex) {
+                System.out.println("Causa: " + ex.getCause() + "Mensaje: " + ex.getMessage());
+                Logger.getLogger(MascotasRest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (JSONException ex) {
+            Logger.getLogger(MascotasRest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+//        mensajes.put(json);
+
+        return Response.ok("" + json + "").build();
+    }
+    
+    
 }
